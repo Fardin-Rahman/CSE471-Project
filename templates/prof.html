@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+
+{% block body %}
+  <h1>Professors</h1>
+
+  <!-- Professor 1 -->
+  <figure>
+  <a href="https://bracu.ac.bd/about/people/muhammad-iqbal-hossain-phd">
+    <img src="{{ url_for('static', filename='images/prof1.jpeg') }}">
+  </a>
+  <span>Muhammad Iqbal Hossain</span>
+  </figure>
+
+
+  <!-- Professor 2 -->
+  <figure>
+  <a href="https://www.bracu.ac.bd/about/people/md-golam-rabiul-alam-phd">
+    <img src="{{ url_for('static', filename='images/prof2.jpg') }}">
+  </a>
+  <span>Md. Golam Rabiul Alam</span>
+  </figure>
+
+{% endblock %}
+
+
+
+

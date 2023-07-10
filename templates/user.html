@@ -3,6 +3,7 @@
 
 	<!-- header section start-->
 	<!-- banner section start-->
+	<h3>Welcome, {{current_user.name}}. You're logged in.</h3>
 	<div class="banner_section layout_padding">
 		<div class="container">
 			<h1 class="best_taital">Make the Best of yourself</h1>
@@ -12,7 +13,7 @@
 		    </div>
 		    <p class="there_text">There are many variations of passages of Lorem Ipsum available, but the majority have suffered alterationThere are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration</p>
 		    <div class="bt_main">
-		    	<div class="discover_bt"><a href="#">Discover More</a></div>
+		    	<div class="discover_bt"><a href="#">{{current_user.name}}</a></div>
 		    </div>
 		</div>
 	</div>
