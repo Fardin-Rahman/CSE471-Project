@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 import pymysql
+import datetime
 pymysql.install_as_MySQLdb()
 from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
 from flask_wtf import FlaskForm
@@ -46,7 +47,15 @@ class Scholarship(db.Model):
     deadline = db.Column(db.String(50), nullable=False)
     link = db.Column(db.String(200), nullable=False)
 
+class Query(db.Model):
+    q_id= db.Column(db.Integer, primary_key=True)
+    question= db.Column(db.String(250),nullable=False)
 
+class Reply(db.Model):
+    r_id= db.Column(db.Integer, nullable=False)
+    answer = db.Column(db.String(250), nullable=False)
+    time = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    ans_id = db.Column(db.Integer, primary_key=True)
 
 # @login_manager.user_loader
 # def load_user(id):
@@ -125,6 +134,29 @@ def scholarship(): #access database
 def prof():
     return render_template('prof.html')
 
+@app.route("/profile")
+def profile():
+    return render_template('profile.html')
+
+@app.route("/discussion", methods = ['GET', 'POST'])
+def Discussion():
+    ques = Query.query.filter().all()
+    rep = Reply.query.filter().all()
+    if (request.method == 'POST'):
+        q = request.form.get('q')
+        id = request.form.get('r_id')
+        r = request.form.get('r')
+        print(r)
+        if q!=None and len(q) > 0:
+            entry = Query(question=q)
+            db.session.add(entry)
+            db.session.commit()
+        elif r!=None and len(r) > 0:
+            entry = Reply(r_id=id, answer=r)
+            db.session.add(entry)
+            db.session.commit()
+        return redirect('/discussion')
+    return render_template('discussion.html', ques=ques, reply=rep)
 
 
 

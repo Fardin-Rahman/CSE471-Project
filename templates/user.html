@@ -1,9 +1,35 @@
 {% extends "userlayout.html" %}
 {% block body %}
 
-	<!-- header section start-->
-	<!-- banner section start-->
-	<h3>Welcome, {{current_user.name}}. You're logged in.</h3>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<style>
+		.alert {
+		  margin: 0 auto;
+		  padding: 10px;
+		  background-color: #60c48c;
+		  color: white;
+		}
+
+		.closebtn {
+		  margin-left: 15px;
+		  color: white;
+		  font-weight: bold;
+		  float: right;
+		  font-size: 22px;
+		  line-height: 20px;
+		  cursor: pointer;
+		  transition: 0.3s;
+		}
+
+		.closebtn:hover {
+		  color: black;
+		}
+	</style>
+
+	<div class="alert">
+	  <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+	  <strong>Success!</strong> Welcome {{current_user.name}}
+	</div>
 	<div class="banner_section layout_padding">
 		<div class="container">
 			<h1 class="best_taital">Make the Best of yourself</h1>
