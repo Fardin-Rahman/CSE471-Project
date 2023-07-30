@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ScholarSyncPlus</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f2f2f2;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #007bff;
+    }
+
+    h2 {
+      margin-top: 30px;
+      margin-bottom: 10px;
+      color: #007bff;
+    }
+
+    .courses {
+      border: 1px solid #ccc;
+      padding: 10px;
+    }
+
+    .course {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .course-title {
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .wishlist-btn, .cart-btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      color: #fff;
+      font-weight: bold;
+      transition: background-color 0.3s;
+    }
+
+    .wishlist-btn {
+      background-color: #007bff;
+    }
+
+    .cart-btn {
+      background-color: #00cc44;
+    }
+
+    .wishlist-btn:hover, .cart-btn:hover {
+      background-color: #0056b3;
+    }
+
+    .cart {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: center;
+      background-color: #f2f2f2;
+      border-radius: 5px;
+    }
+
+    #cart-quantity {
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .button-container {
+      display: flex;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>ScholarSyncPlus</h1>
+
+    <h2>Premimum Courses</h2>
+    <div class="courses">
+      <div class="course">
+        <span class="course-title">Python for Beginners</span>
+        <div class="button-container">
+          <button class="wishlist-btn">Add to Wishlist</button>
+          <button class="cart-btn">Add to Cart</button>
+        </div>
+      </div>
+      <div class="course">
+        <span class="course-title">Laravel</span>
+        <div class="button-container">
+          <button class="wishlist-btn">Add to Wishlist</button>
+          <button class="cart-btn">Add to Cart</button>
+        </div>
+      </div>
+      <div class="course">
+        <span class="course-title">Flask</span>
+        <div class="button-container">
+          <button class="wishlist-btn">Add to Wishlist</button>
+          <button class="cart-btn">Add to Cart</button>
+        </div>
+      </div>
+      <!-- Add more courses here -->
+    </div>
+
+    <h2>Cart</h2>
+    <div class="cart">
+      <p>Total Courses in Cart: <span id="cart-quantity">0</span></p>
+    </div>
+
+    <script>
+      // Store the cart quantity
+      var cartQuantity = 0;
+
+      // Function to handle adding courses to the wishlist
+      function addToWishlist(event) {
+        var courseTitle = event.target.parentNode.querySelector('.course-title').textContent;
+        alert('Added "' + courseTitle + '" to the wishlist.');
+      }
+
+      // Function to handle adding courses to the cart
+      function addToCart(event) {
+        var courseTitle = event.target.parentNode.querySelector('.course-title').textContent;
+        cartQuantity++;
+        document.getElementById('cart-quantity').textContent = cartQuantity;
+        alert('Added "' + courseTitle + '" to the cart.');
+      }
+
+      // Add event listeners to wishlist buttons
+      var wishlistButtons = document.querySelectorAll('.wishlist-btn');
+      wishlistButtons.forEach(function (button) {
+        button.addEventListener('click', addToWishlist);
+      });
+
+      // Add event listeners to cart buttons
+      var cartButtons = document.querySelectorAll('.cart-btn');
+      cartButtons.forEach(function (button) {
+        button.addEventListener('click', addToCart);
+      });
+    </script>
+  </div>
+</body>
+
+</html>

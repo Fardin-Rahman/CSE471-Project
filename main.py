@@ -19,6 +19,8 @@ app.config['SECRET_KEY'] = 'thisisasecretkey'
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
+login_manager.login_view = 'loginP'
+
 
 
 class Contacts(db.Model, UserMixin):
@@ -29,6 +31,17 @@ class Contacts(db.Model, UserMixin):
 
     def get_id(self):
         return str(self.serialno)
+
+class Profcontacts(db.Model, UserMixin):
+    serial = db.Column(db.Integer, primary_key=True)
+    FullName = db.Column(db.String(100), nullable=False)
+    uniName = db.Column(db.String(100), nullable=False)
+    designation = db.Column(db.String(100), nullable=False)
+    mail = db.Column(db.String(120), unique=True, nullable=False)
+    passw = db.Column(db.String(100), nullable=False)
+
+    def get_id(self):
+        return str(self.serial)
 
 class Jobs(db.Model):
     Job_Code = db.Column(db.Integer, primary_key=True)
@@ -56,6 +69,26 @@ class Reply(db.Model):
     answer = db.Column(db.String(250), nullable=False)
     time = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     ans_id = db.Column(db.Integer, primary_key=True)
+import enum
+
+class WishlistStatus(enum.Enum):
+    no = 'no'
+    yes = 'yes'
+
+class CartStatus(enum.Enum):
+    no = 'no'
+    yes = 'yes'
+
+class Premium(db.Model):
+    c_id = db.Column(db.Integer, primary_key=True)
+    c_name = db.Column(db.String(250), nullable=False)
+    wishlist = db.Column(db.Enum(WishlistStatus), nullable=False, default=WishlistStatus.no)
+    cart = db.Column(db.Enum(CartStatus), nullable=False, default=CartStatus.no)
+
+    def __init__(self, c_name, wishlist=WishlistStatus.no, cart=CartStatus.no):
+        self.c_name = c_name
+        self.wishlist = wishlist
+        self.cart = cart
 
 # @login_manager.user_loader
 # def load_user(id):
@@ -97,10 +130,36 @@ def contact():
         return render_template('contact_error.html')
 
 
+@app.route("/profcontact", methods = ['GET', 'POST']) #need to add more parameters for student sign up
+def profcontact():
+    try:
+        if(request.method=='POST'):
+            '''Add entry to the database'''
+            FullName = request.form.get('FullName')
+            uniName=request.form.get("uniName")
+            designation=request.form.get("designation")
+            mail = request.form.get('mail')
+            passw = request.form.get('passw')
+
+            entry = Profcontacts(FullNamename=FullName,mail = mail, passw=passw,uniName=uniName,designation=designation )
+            db.session.add(entry)
+            db.session.commit()
+        return render_template('profcontact.html')
+    except:
+        return render_template('contact_error.html')
+
+
+
+
+
 
 @app.route("/user")
 def user():
     return render_template('user.html')
+
+@app.route("/userP")
+def userP():
+    return render_template('userP.html')
 
 
 @app.route("/login", methods= ['GET', 'POST'])
@@ -110,12 +169,13 @@ def login():
         password_in= request.form.get('password')
         res = Contacts.query.filter(Contacts.email==email_in).all()
         if len(res) == 0:
-            return 'error'  #need yo add flash on top
+            #return render_template("userP.html")
+            return 'errorwdwefw'  #need to add flash on top
         elif res[0].email==email_in and res[0].password==password_in:
             login_user(res[0])
             return redirect(url_for('user'))
         elif res[0].email==email_in and res[0].password!=password_in:
-            return 'password error' #need yo add flash on top
+            return 'password error' #need to add flash on top
 
     return render_template('login.html')
 
@@ -138,6 +198,10 @@ def prof():
 def profile():
     return render_template('profile.html')
 
+@app.route("/premium")
+def premium():
+    return render_template('premium.html')
+
 @app.route("/discussion", methods = ['GET', 'POST'])
 def Discussion():
     ques = Query.query.filter().all()
@@ -157,12 +221,81 @@ def Discussion():
             db.session.commit()
         return redirect('/discussion')
     return render_template('discussion.html', ques=ques, reply=rep)
+#@app.route('/loginP')
+#def loginP():
+    #return render_template('loginP.html')
+@app.route("/loginP", methods= ['GET', 'POST'])
+def loginP():
+    if(request.method== 'POST'):
+        mail_in= request.form.get('mail')
+        passw_in= request.form.get('password')
+        res = Profcontacts.query.filter(Profcontacts.mail==mail_in).all()
+        print(mail_in,passw_in,res[0].mail)
+        if len(res) == 0:
+            return 'error'  #need to add flash on top
+        elif res[0].mail==mail_in and res[0].passw==passw_in:
+            login_user(res[0])
+            return redirect(url_for('userP'))
+        elif res[0].mail==mail_in and res[0].passw!=passw_in:
 
+            return 'password error' #need to add flash on top
+
+    return render_template('loginP.html')
+
+
+'''
+@app.route("/loginP", methods=['GET', 'POST'])
+def loginP():
+    if request.method == 'POST':
+        mail_in = request.form.get('mail')
+        passw_in = request.form.get('passw')
+        res = Profcontacts.query.filter_by(mail=mail_in).first()
+
+        if not res:
+            flash('Invalid email or password', 'error12')
+            return redirect(url_for('loginP'))
+
+        if res.passw == passw_in:
+            login_user(res)
+            return redirect(url_for('dashboard2'))
+
+        flash('Invalid email or password', 'error12')
+        return redirect(url_for('loginP'))
+
+    return render_template('loginP.html')'''
+
+'''
+@app.route("/loginP", methods=['GET', 'POST'])
+def loginP():
+    if (request.method == 'POST'):
+        #Fetch data and add it to the database
+        FullName = request.form.get('FullName')
+        uniName = request.form.get("uniName")
+        designation = request.form.get("designation")
+        mail = request.form.get('mail')
+        passw = request.form.get('passw')
+        entry = Profcontacts(FullNamename=FullName,mail = mail, passw=passw,uniName=uniName,designation=designation )
+        db.session.add(entry)
+        db.session.commit()
+        return redirect(url_for('userP'))  # Redirect to user.html after successful login
+
+    return render_template('loginP.html')'''
 
 
 @login_manager.user_loader
-def load_user(user_id):
-    return Contacts.query.get(int(user_id))
+def load_user2(user_id2):
+    return Profcontacts.query.get(int(user_id2))
+
+
+@app.route('/userP', methods=['GET', 'POST'])
+@login_required
+def dashboard2():
+    return render_template('userP.html')
+
+
+@login_manager.user_loader
+def load_user(user_id2):
+    return Profcontacts.query.get(int(user_id2))
 
 
 @app.route('/user', methods=['GET', 'POST'])
@@ -178,6 +311,29 @@ def logout():
     return redirect(url_for('home'))
 
 
+@app.route('/premium')
+def premium():
+    # Fetch courses from the database
+    courses = Premium.query.all()
+    total_courses_in_cart = sum(1 for course in courses if course.cart == CartStatus.yes)
+    return render_template('premium.html', courses=courses, total_courses_in_cart=total_courses_in_cart)
+
+
+@app.route('/add_course', methods=['POST'])
+def add_course():
+    course_name = request.form['course_name']
+    wishlist_status = request.form.get('wishlist', 'no')
+    cart_status = request.form.get('cart', 'no')
+
+    wishlist_status = WishlistStatus.yes if wishlist_status == 'yes' else WishlistStatus.no
+    cart_status = CartStatus.yes if cart_status == 'yes' else CartStatus.no
+
+    course = Premium(c_name=course_name, wishlist=wishlist_status, cart=cart_status)
+    db.session.add(course)
+    db.session.commit()
+
+    return "Course added successfully."
+
 
 if __name__ == "__main__":
     with app.test_request_context():
@@ -191,6 +347,11 @@ if __name__ == "__main__":
         app.add_url_rule('/aboutus.html', 'aboutus', aboutus)
         app.add_url_rule('/scholarship.html', 'scholarship', scholarship)
         app.add_url_rule('/prof.html', 'prof', prof)
+        app.add_url_rule('/userP.html', 'userP', userP)
+        app.add_url_rule('/loginP.html','loginP', loginP)
+        app.add_url_rule('/profcontact.html','profcontact', profcontact)
+        app.add_url_rule('/premium.html', 'premium', premium)
+
 
     app.run(debug=True)
 
