@@ -198,9 +198,6 @@ def prof():
 def profile():
     return render_template('profile.html')
 
-@app.route("/premium")
-def premium():
-    return render_template('premium.html')
 
 @app.route("/discussion", methods = ['GET', 'POST'])
 def Discussion():

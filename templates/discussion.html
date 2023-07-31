@@ -1,5 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "userlayout.html" %}
+{% block body %}
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,7 +13,7 @@
       background-color: #f2f2f2;
     }
 
-    .container {
+    .container1 {
       max-width: 800px;
       margin: 0 auto;
       padding: 20px;
@@ -122,7 +122,7 @@
   </style>
 </head>
 <body>
-  <div class="container">
+  <div class="container1">
     <div class="question">
 
 
@@ -161,4 +161,4 @@
       </form>
   </div>
 </body>
-</html>
+	{% endblock %}
