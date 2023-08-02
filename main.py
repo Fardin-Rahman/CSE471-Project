@@ -21,8 +21,6 @@ login_manager.init_app(app)
 login_manager.login_view = 'login'
 # login_manager.login_view = 'loginP'
 
-
-
 class Contacts(db.Model, UserMixin):
     serialno = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), nullable=False)
