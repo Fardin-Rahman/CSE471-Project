@@ -119,6 +119,7 @@
     .comment-box button:hover {
       background-color: #218838;
     }
+
   </style>
 </head>
 <body>
@@ -126,7 +127,7 @@
     <div class="question">
 
 
-      {% for i in ques %}
+      {% for i in ques[::-1] %}
                 <h2>Question Title</h2>
               <div class="q">
               <p>{{ i['question'] }}</p>
@@ -139,7 +140,8 @@
 
       <div class="replies">
         <div class="reply">
-          <p>{{ rep.answer }}</p>
+          <p>{{ rep.answer }} </p>
+
         </div>
           {% endif %}
         {% endfor %}

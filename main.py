@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 import pymysql
 import datetime
@@ -19,7 +19,7 @@ app.config['SECRET_KEY'] = 'thisisasecretkey'
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
-login_manager.login_view = 'loginP'
+# login_manager.login_view = 'loginP'
 
 
 
@@ -69,8 +69,8 @@ class Reply(db.Model):
     answer = db.Column(db.String(250), nullable=False)
     time = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     ans_id = db.Column(db.Integer, primary_key=True)
-import enum
 
+import enum
 class WishlistStatus(enum.Enum):
     no = 'no'
     yes = 'yes'
@@ -90,9 +90,10 @@ class Premium(db.Model):
         self.wishlist = wishlist
         self.cart = cart
 
-# @login_manager.user_loader
-# def load_user(id):
-#     return contacts.query.get(int(id))
+@login_manager.user_loader
+def load_user(id):
+    if Profcontacts.query.get(int(id)): return Profcontacts.query.get(int(id))
+    elif Contacts.query.get(int(id)): return Contacts.query.get(int(id))
 
 @app.route("/")
 @app.route("/index")
@@ -149,10 +150,6 @@ def profcontact():
         return render_template('contact_error.html')
 
 
-
-
-
-
 @app.route("/user")
 def user():
     return render_template('user.html')
@@ -169,8 +166,8 @@ def login():
         password_in= request.form.get('password')
         res = Contacts.query.filter(Contacts.email==email_in).all()
         if len(res) == 0:
-            #return render_template("userP.html")
-            return 'errorwdwefw'  #need to add flash on top
+            flash('Please fill all the field', 'danger')
+            return render_template('login.html')  #need to add flash on top
         elif res[0].email==email_in and res[0].password==password_in:
             login_user(res[0])
             return redirect(url_for('user'))
@@ -199,6 +196,11 @@ def profile():
     return render_template('profile.html')
 
 
+
+@app.route("/professor_profile")
+def professor_profile():
+    return render_template('professor_profile.html')
+
 @app.route("/discussion", methods = ['GET', 'POST'])
 def Discussion():
     ques = Query.query.filter().all()
@@ -218,9 +220,8 @@ def Discussion():
             db.session.commit()
         return redirect('/discussion')
     return render_template('discussion.html', ques=ques, reply=rep)
-#@app.route('/loginP')
-#def loginP():
-    #return render_template('loginP.html')
+
+
 @app.route("/loginP", methods= ['GET', 'POST'])
 def loginP():
     if(request.method== 'POST'):
@@ -234,65 +235,15 @@ def loginP():
             login_user(res[0])
             return redirect(url_for('userP'))
         elif res[0].mail==mail_in and res[0].passw!=passw_in:
-
             return 'password error' #need to add flash on top
 
     return render_template('loginP.html')
-
-
-'''
-@app.route("/loginP", methods=['GET', 'POST'])
-def loginP():
-    if request.method == 'POST':
-        mail_in = request.form.get('mail')
-        passw_in = request.form.get('passw')
-        res = Profcontacts.query.filter_by(mail=mail_in).first()
-
-        if not res:
-            flash('Invalid email or password', 'error12')
-            return redirect(url_for('loginP'))
-
-        if res.passw == passw_in:
-            login_user(res)
-            return redirect(url_for('dashboard2'))
-
-        flash('Invalid email or password', 'error12')
-        return redirect(url_for('loginP'))
-
-    return render_template('loginP.html')'''
-
-'''
-@app.route("/loginP", methods=['GET', 'POST'])
-def loginP():
-    if (request.method == 'POST'):
-        #Fetch data and add it to the database
-        FullName = request.form.get('FullName')
-        uniName = request.form.get("uniName")
-        designation = request.form.get("designation")
-        mail = request.form.get('mail')
-        passw = request.form.get('passw')
-        entry = Profcontacts(FullNamename=FullName,mail = mail, passw=passw,uniName=uniName,designation=designation )
-        db.session.add(entry)
-        db.session.commit()
-        return redirect(url_for('userP'))  # Redirect to user.html after successful login
-
-    return render_template('loginP.html')'''
-
-
-@login_manager.user_loader
-def load_user2(user_id2):
-    return Profcontacts.query.get(int(user_id2))
 
 
 @app.route('/userP', methods=['GET', 'POST'])
 @login_required
 def dashboard2():
     return render_template('userP.html')
-
-
-@login_manager.user_loader
-def load_user(user_id2):
-    return Profcontacts.query.get(int(user_id2))
 
 
 @app.route('/user', methods=['GET', 'POST'])

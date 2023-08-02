@@ -1,0 +1,121 @@
+{% extends "userPlayout.html" %}
+{% block body %}
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Profile Dashboard</title>
+  <style>
+
+
+      .containers {
+        width: 80%;
+        margin: 0 auto;
+        border-collapse: collapse;
+        font-family: Arial, sans-serif;
+        font-size: 17px;
+        text-align: center;
+        background-color: #e9f2f2;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+        border-radius: 20px;
+        padding: 30px;
+        max-width: 600px;
+        width: 80%;
+      }
+
+      .profile {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+
+      .propic {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        object-fit: cover;
+        box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.3);
+        margin: 0 auto 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .propic img {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+      }
+
+      .name {
+        font-size: 32px;
+        font-weight: bold;
+        margin-bottom: 10px;
+      }
+
+      p {
+        margin: 8px 0;
+      }
+
+      strong {
+        font-weight: bold;
+      }
+
+      .interests {
+        margin-top: 20px;
+        border-top: 1px solid #ccc;
+        padding-top: 20px;
+      }
+
+      .interests h3 {
+        font-size: 24px;
+        margin-bottom: 10px;
+      }
+
+      .interests ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .interests li {
+        margin-bottom: 5px;
+        display: inline-block;
+        background-color: #484852;
+        color: #e3e3e3;
+        padding: 5px 10px;
+        border-radius: 4px;
+      }
+
+
+  </style>
+</head>
+<body>
+
+  <div class="containers">
+    <div class="profile">
+      <div class="propic"><img src="https://yt3.googleusercontent.com/pK5_z_dptxyLuGllTGH4voHjz6WNTv0vgysrHQtmK6X45fl8g_h1ytu1H-ir1ExvY8uph0MbQA=s900-c-k-c0x00ffffff-no-rj" alt="Student Image"></div>
+
+      <h2 class="name">{{current_user.FullName}}</h2>
+      <div class="details">
+        <p><strong>Email:</strong> {{current_user.mail}}</p>
+        <p><strong>Designation:</strong> {{current_user.designation}} </p>
+        <p><strong>Unversity:</strong> {{current_user.uniName}}</p>
+        <p><strong>Date of Birth:</strong> 1998-05-15</p>
+        <p><strong>Educational Background:</strong> BSc in Computer Science</p>
+      </div>
+      <div class="interests">
+        <h3>Research Domains:</h3>
+        <ul>
+          <li>Artificial Intelligence</li>
+          <li>Data Science</li>
+          <li>Machine Learning</li>
+          <li>Computer Vision</li>
+          <li>Human-Computer Interaction</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</body>
+
+
+	{% endblock %}
