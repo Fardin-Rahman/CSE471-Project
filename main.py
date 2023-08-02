@@ -329,7 +329,7 @@ def add_course():
     db.session.add(course)
     db.session.commit()
 
-    return "Course added successfully."
+    return "Juha edited successfully."
 
 
 if __name__ == "__main__":
