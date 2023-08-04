@@ -1,4 +1,4 @@
-{% extends "layout.html" %}
+{% extends "userlayout.html" %}
 {% block body %}
 <head>
   <meta charset="UTF-8">
@@ -118,6 +118,7 @@
               <span aria-hidden="true"></span>
             </button>
           </th>
+          {% if current_user.basic_mode %}
           <th>
             <button>
               University
@@ -130,6 +131,7 @@
               <span aria-hidden="true"></span>
             </button>
           </th>
+          {% endif %}
         </tr>
       </thead>
       <tbody>
@@ -138,14 +140,17 @@
           <tr>
             <td>{{ item['FullName'] }}</td>
             <td>{{ item['designation'] }}</td>
+             {% if current_user.basic_mode %}
             <td>{{ item['uniName'] }}</td>
             <td>{{ item['mail'] }}</td>
+            {% endif %}
           </tr>
         {% endfor %}
 
       </tbody>
     </table>
   </div>
+          <br> <br><br> <br><br> <br><br> <br><br> <br><br> <br>
 
   <script>
 

@@ -108,7 +108,8 @@ def aboutus():
 
 @app.route("/professor_list")
 def professor_list():
-    return render_template('professor_list.html')
+    r = Profcontacts.query.filter().all()
+    return render_template('professor_list.html', result = r)
 
 
 
@@ -194,6 +195,7 @@ def profile():
 
 @app.route("/jobs_user")
 def jobs_user():
+    print(current_user.basic_mode)
     res = Jobs.query.filter().all()
     return render_template('jobs_user.html', result=res)
 
@@ -202,6 +204,10 @@ def scholarship_user():
     res = Scholarship.query.filter().all()
     return render_template('scholarship_user.html', result=res)
 
+@app.route("/professor_list_user")
+def professor_list_user():
+    r = Profcontacts.query.filter().all()
+    return render_template('professor_list_user.html', result = r)
 
 @app.route("/professor_profile")
 def professor_profile():
@@ -267,7 +273,6 @@ def logout():
 
 @app.route('/premium')
 def premium():
-    # Fetch courses from the database
     courses = Premium.query.all()
     total_courses_in_cart = sum(1 for course in courses if course.cart == CartStatus.yes)
     return render_template('premium.html', courses=courses, total_courses_in_cart=total_courses_in_cart)
@@ -304,7 +309,6 @@ if __name__ == "__main__":
         app.add_url_rule('/loginP.html','loginP', loginP)
         app.add_url_rule('/profcontact.html','profcontact', profcontact)
         app.add_url_rule('/premium.html', 'premium', premium)
-
 
     app.run(debug=True)
 
