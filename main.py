@@ -4,15 +4,12 @@ import pymysql
 import datetime
 pymysql.install_as_MySQLdb()
 from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
-from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField
-from wtforms.validators import InputRequired, Length, ValidationError
-from flask_bcrypt import Bcrypt
+
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:@localhost/scholarsync'
 db = SQLAlchemy(app)
-bcrypt = Bcrypt(app)
+# bcrypt = Bcrypt(app)
 
 app.config['SECRET_KEY'] = 'thisisasecretkey'
 
@@ -26,6 +23,8 @@ class Contacts(db.Model, UserMixin):
     name = db.Column(db.String(80), nullable=False)
     email = db.Column(db.String(20), nullable=False)
     password = db.Column(db.String(12), nullable=False)
+    basic_mode = db.Column(db.Boolean, nullable=False, default=True)
+
 
     def get_id(self):
         return str(self.serialno)
@@ -107,9 +106,9 @@ def courses():
 def aboutus():
     return render_template('aboutus.html')
 
-@app.route("/recruiters")
-def recruiters():
-    return 'on process'
+@app.route("/professor_list")
+def professor_list():
+    return render_template('professor_list.html')
 
 
 
@@ -117,11 +116,10 @@ def recruiters():
 def contact():
     try:
         if(request.method=='POST'):
-            '''Add entry to the database'''
             name = request.form.get('name')
             email = request.form.get('email')
             password = request.form.get('password')
-            entry = Contacts(name=name,email = email, password=password )
+            entry = Contacts(name=name,email = email, password=password, basic_mode=1 )
             db.session.add(entry)
             db.session.commit()
         return render_template('contact.html')
@@ -177,7 +175,7 @@ def login():
 @app.route("/job", methods= ['GET'])
 def job(): #access database jobs
     res = Jobs.query.filter().all()
-    return render_template('recruiters.html', result=res)
+    return render_template('jobs.html', result=res)
 
 
 @app.route("/scholarship", methods= ['GET'])
@@ -193,6 +191,16 @@ def prof():
 def profile():
     return render_template('profile.html')
 
+
+@app.route("/jobs_user")
+def jobs_user():
+    res = Jobs.query.filter().all()
+    return render_template('jobs_user.html', result=res)
+
+@app.route("/scholarship_user")
+def scholarship_user():
+    res = Scholarship.query.filter().all()
+    return render_template('scholarship_user.html', result=res)
 
 
 @app.route("/professor_profile")
@@ -287,7 +295,6 @@ if __name__ == "__main__":
         app.add_url_rule('/index.html', '/', home)
         app.add_url_rule('/courses.html', 'courses', courses)
         app.add_url_rule('/jobs.html', 'job', job)
-        app.add_url_rule('/recurments.html', 'recruiters', recruiters)
         app.add_url_rule('/contact.html', 'more', contact)
         app.add_url_rule('/user.html', 'user', user)
         app.add_url_rule('/aboutus.html', 'aboutus', aboutus)

@@ -1,4 +1,4 @@
-{% extends "layout.html" %}
+{% extends "userlayout.html" %}
 {% block body %}
   <head>
     <title>Sortable and Searchable Table</title>
@@ -121,25 +121,28 @@
         onkeyup="searchTable()"
       >
     </div>
-
     <table id="myTable">
       <thead>
         <tr>
-          <th onclick="sortTable(0)">Job Title</th>
-          <th onclick="sortTable(1)">Company Name</th>
+          <th onclick="sortTable(0)">Scholarship Title</th>
+          <th onclick="sortTable(1)">University Name</th>
+          {% if current_user.basic_mode %}
           <th onclick="sortTable(2)">Requirement</th>
-          <th onclick="sortTable(3)">Location</th>
+          <th onclick="sortTable(3)">Country</th>
+          {% endif %}
           <th onclick="sortTable(5)">Deadline</th>
         </tr>
       </thead>
       <tbody>
         {% for item in result %}
           <tr>
-            <td>{{ item['Job_Title'] }}</td>
-            <td>{{ item['Company_Name'] }}</td>
-            <td>{{ item['Requirement'] }}</td>
-            <td>{{ item['Location'] }}</td>
-            <td>{{ item['Deadline'] }}</td>
+            <td>{{ item['name'] }}</td>
+            <td>{{ item['university'] }}</td>
+            {% if current_user.basic_mode %}
+            <td>{{ item['requirement'] }}</td>
+            <td>{{ item['country'] }}</td>
+            {% endif %}
+            <td>{{ item['deadline'] }}</td>
           </tr>
         {% endfor %}
       </tbody>

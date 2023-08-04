@@ -1,0 +1,166 @@
+{% extends "userlayout.html" %}
+{% block body %}
+<head>
+   <title>Sortable and Searchable Table</title>
+   <style>
+      table {
+      width: 90%;
+      margin: 0 auto;
+      border-collapse: collapse;
+      font-family: Arial, sans-serif;
+      font-size: 17px;
+      text-align: center;
+      }
+      th {
+      background-color: #4CAF50;
+      color: white;
+      cursor: pointer;
+      padding: 10px;
+      }
+      td {
+      padding: 15px;
+      }
+      tr:nth-child(even) {
+      background-color: #f2f2f2;
+      }
+      .search-container {
+      text-align: center;
+      margin-bottom: 20px;
+      }
+      .search-input {
+      padding: 5px;
+      width: 200px;
+      }
+   </style>
+   <script>
+      function sortTable(n) {
+          var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+          table = document.getElementById("myTable");
+          switching = true;
+          dir = "asc";
+
+          while (switching) {
+              switching = false;
+              rows = table.rows;
+
+              for (i = 1; i < rows.length - 1; i++) {
+                  shouldSwitch = false;
+
+                  x = rows[i].getElementsByTagName("TD")[n];
+                  y = rows[i + 1].getElementsByTagName("TD")[n];
+
+                  if (dir === "asc") {
+                      if (n === 4) {
+                          // For the "Deadline" column, convert date strings to Date objects for comparison
+                          const dateX = new Date(x.innerText);
+                          const dateY = new Date(y.innerText);
+                          if (dateX > dateY) {
+                              shouldSwitch = true;
+                              break;
+                          }
+                      } else {
+                          if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                              shouldSwitch = true;
+                              break;
+                          }
+                      }
+                  } else if (dir === "desc") {
+                      if (n === 4) {
+                          const dateX = new Date(x.innerText);
+                          const dateY = new Date(y.innerText);
+                          if (dateX < dateY) {
+                              shouldSwitch = true;
+                              break;
+                          }
+                      } else {
+                          if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                              shouldSwitch = true;
+                              break;
+                          }
+                      }
+                  }
+              }
+
+              if (shouldSwitch) {
+                  rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                  switching = true;
+                  switchcount++;
+              } else {
+                  if (switchcount === 0 && dir === "asc") {
+                      dir = "desc";
+                      switching = true;
+                  }
+              }
+          }
+      }
+
+      function searchTable() {
+          var input, filter, table, tr, td, i, j, txtValue;
+          input = document.getElementById("searchInput");
+          filter = input.value.toUpperCase();
+          table = document.getElementById("myTable");
+          tr = table.getElementsByTagName("tr");
+
+          for (i = 0; i < tr.length; i++) {
+              td = tr[i].getElementsByTagName("td");
+              var found = false;
+
+              for (j = 0; j < td.length; j++) {
+                  if (td[j]) {
+                      txtValue = td[j].textContent || td[j].innerText;
+
+                      if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                          found = true;
+                          break;
+                      }
+                  }
+              }
+
+              if (found) {
+                  tr[i].style.display = "";
+              } else {
+                  tr[i].style.display = "none";
+              }
+          }
+      }
+   </script>
+</head>
+<body>
+   <div class="search-container">
+      <input
+         type="text"
+         id="searchInput"
+         class="search-input"
+         placeholder="Search..."
+         onkeyup="searchTable()"
+         >
+   </div>
+   <table id="myTable">
+      <thead>
+         <tr>
+            <th onclick="sortTable(0)">Job Title</th>
+            <th onclick="sortTable(1)">Company Name</th>
+            <th onclick="sortTable(2)">Requirement</th>
+            {% if current_user.basic_mode %}
+            <th onclick="sortTable(3)">Location</th>
+            <th onclick="sortTable(4)">Deadline</th>
+            {% endif %}
+         </tr>
+      </thead>
+      <tbody>
+         {% for item in result %}
+         <tr>
+            <td>{{ item['Job_Title'] }}</td>
+            <td>{{ item['Company_Name'] }}</td>
+            <td>{{ item['Requirement'] }}</td>
+            {% if current_user.basic_mode %}
+            <td>{{ item['Location'] }}</td>
+            <td>{{ item['Deadline'] }}</td>
+            {% endif %}
+         </tr>
+         {% endfor %}
+      </tbody>
+   </table>
+   <br><br>
+</body>
+{% endblock %}

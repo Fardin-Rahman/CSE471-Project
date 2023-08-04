@@ -134,26 +134,27 @@
               </div>
 
         <strong>Replies:</strong>
-        {% for rep in reply %}
-            {% if rep.r_id == i.q_id %}
-
-
-      <div class="replies">
-        <div class="reply">
-          <p>{{ rep.answer }} </p>
-
-        </div>
-          {% endif %}
-        {% endfor %}
-      <div class="comment-box">
-          <form action="/discussion" method="post">
-            <input type="hidden" name="r_id" value="{{ i.q_id }}">
-        <input type="text" name="r" placeholder="Reply here...">
-        <button type="submit">Reply</button>
-        </form>
+              {% for rep in reply %}
+        {% if rep.r_id == i.q_id %}
+          <div class="replies">
+            <div class="reply">
+              <p>{{ rep.answer }}</p>
+              <button class="delete-button" onclick="deleteReply({{ rep.r_id }})">Delete</button>
+            </div>
           </div>
+        {% endif %}
+      {% endfor %}
 
-        {% endfor %}
+        <div class="comment-box">
+        <form action="/discussion" method="post">
+          <input type="hidden" name="r_id" value="{{ i.q_id }}">
+          <input type="text" name="r" placeholder="Reply here...">
+          <button type="submit">Reply</button>
+        </form>
+      </div>
+      <button class="delete-button" onclick="deleteQuestion({{ i.q_id }})">Delete Question</button>
+    </div>
+    {% endfor %}
     <!-- Advanced and Beautiful Text/Post Box -->
     <div class="comment-box">
       <h2>Post Your Question</h2>
