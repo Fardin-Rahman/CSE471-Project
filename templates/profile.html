@@ -96,7 +96,12 @@
   <div class="containers">
     <div class="profile">
       <div class="propic"><img src="https://yt3.googleusercontent.com/pK5_z_dptxyLuGllTGH4voHjz6WNTv0vgysrHQtmK6X45fl8g_h1ytu1H-ir1ExvY8uph0MbQA=s900-c-k-c0x00ffffff-no-rj" alt="Student Image"></div>
+      {% if current_user.basic_mode %}
+      <h2 class="name">BASIC</h2>
+      {% else %}
       <h2 class="name">PREMIUM+</h2>
+      {% endif %}
+
       <div class="details">
         <p><strong>Name:</strong> {{current_user.name}}</p>
         <p><strong>Email:</strong> {{current_user.email}}</p>

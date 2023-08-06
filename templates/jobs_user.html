@@ -142,7 +142,7 @@
             <th onclick="sortTable(0)">Job Title</th>
             <th onclick="sortTable(1)">Company Name</th>
             <th onclick="sortTable(2)">Requirement</th>
-            {% if current_user.basic_mode %}
+            {% if not current_user.basic_mode %}
             <th onclick="sortTable(3)">Location</th>
             <th onclick="sortTable(4)">Deadline</th>
             {% endif %}
@@ -154,7 +154,7 @@
             <td>{{ item['Job_Title'] }}</td>
             <td>{{ item['Company_Name'] }}</td>
             <td>{{ item['Requirement'] }}</td>
-            {% if current_user.basic_mode %}
+            {% if not current_user.basic_mode %}
             <td>{{ item['Location'] }}</td>
             <td>{{ item['Deadline'] }}</td>
             {% endif %}

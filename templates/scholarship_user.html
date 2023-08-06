@@ -126,7 +126,7 @@
         <tr>
           <th onclick="sortTable(0)">Scholarship Title</th>
           <th onclick="sortTable(1)">University Name</th>
-          {% if current_user.basic_mode %}
+          {% if not current_user.basic_mode %}
           <th onclick="sortTable(2)">Requirement</th>
           <th onclick="sortTable(3)">Country</th>
           {% endif %}
@@ -138,7 +138,7 @@
           <tr>
             <td>{{ item['name'] }}</td>
             <td>{{ item['university'] }}</td>
-            {% if current_user.basic_mode %}
+            {% if not current_user.basic_mode %}
             <td>{{ item['requirement'] }}</td>
             <td>{{ item['country'] }}</td>
             {% endif %}

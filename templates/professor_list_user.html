@@ -118,7 +118,7 @@
               <span aria-hidden="true"></span>
             </button>
           </th>
-          {% if current_user.basic_mode %}
+          {% if not current_user.basic_mode %}
           <th>
             <button>
               University
@@ -140,12 +140,12 @@
           <tr>
             <td>{{ item['FullName'] }}</td>
             <td>{{ item['designation'] }}</td>
-             {% if current_user.basic_mode %}
+            {% if not current_user.basic_mode %}
             <td>{{ item['uniName'] }}</td>
             <td>{{ item['mail'] }}</td>
             {% endif %}
-          </tr>
-        {% endfor %}
+            </tr>
+           {% endfor %}
 
       </tbody>
     </table>
