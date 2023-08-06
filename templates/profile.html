@@ -8,6 +8,7 @@
   <style>
 
 
+
       .containers {
         width: 80%;
         margin: 0 auto;
@@ -88,6 +89,20 @@
         border-radius: 4px;
       }
 
+      .comment-box button {
+  display: block;
+  margin: 10px auto; /* Center the button horizontally */
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #28a745;
+  color: #f1f1f1;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+
 
   </style>
 </head>
@@ -101,6 +116,14 @@
       {% else %}
       <h2 class="name">PREMIUM+</h2>
       {% endif %}
+
+
+            <div class="comment-box">
+      <form action="/profile" method="post">
+        <input type="hidden" name="type" value="{{ current_user.basic_mode }}">
+        <button type="submit" style="background-color:#2bad79">Change to different module</button>
+      </form>
+    </div>
 
       <div class="details">
         <p><strong>Name:</strong> {{current_user.name}}</p>
@@ -121,7 +144,10 @@
           <li>Human-Computer Interaction</li>
         </ul>
       </div>
-    </div>
+
+
+
+
   </div>
 </body>
 

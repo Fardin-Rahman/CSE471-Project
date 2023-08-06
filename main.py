@@ -188,8 +188,18 @@ def scholarship(): #access database
 def prof():
     return render_template('prof.html')
 
-@app.route("/profile")
+@app.route("/profile", methods=['GET', 'POST'])
 def profile():
+    if (request.method == 'POST'):
+        q = request.form.get('type')
+        print(q)
+        if q == "True":
+            current_user.basic_mode = False
+        else:
+            current_user.basic_mode = True
+        db.session.commit()
+        print(current_user.basic_mode)
+        return redirect('/profile')
     return render_template('profile.html')
 
 
