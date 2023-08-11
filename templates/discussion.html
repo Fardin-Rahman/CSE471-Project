@@ -119,6 +119,17 @@
     .comment-box button:hover {
       background-color: #218838;
     }
+    .date{
+      font-size: 10px;
+    }
+    .who{
+      font-size: 16px;
+      color: #69d184;
+    }
+    .whopost{
+      font-size: 18px;
+      color: #1b291f;
+    }
 
   </style>
 </head>
@@ -130,7 +141,9 @@
       {% for i in ques[::-1] %}
                 <h2>Question Title</h2>
               <div class="q">
+                <div class="whopost"><b>{{ i.poster }}:</b></div>
               <p>{{ i['question'] }}</p>
+                <div class="date">{{ i.date }}</div>
               </div>
 
         <strong>Replies:</strong>
@@ -139,8 +152,11 @@
 
 
       <div class="replies">
+
         <div class="reply">
-          <p>{{ rep.answer }} </p>
+           <div class="who"><b>{{ rep.person }}:</b></div>
+          <p>{{ rep.answer }}</p>
+          <div class="date">{{ rep.time }}</div>
 
         </div>
           {% endif %}
@@ -154,7 +170,7 @@
           </div>
 
         {% endfor %}
-    <!-- Advanced and Beautiful Text/Post Box -->
+
     <div class="comment-box">
       <h2>Post Your Question</h2>
       <form action="/discussion" method="post">

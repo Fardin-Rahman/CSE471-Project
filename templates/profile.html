@@ -110,19 +110,26 @@
 
   <div class="containers">
     <div class="profile">
-      <div class="propic"><img src="https://yt3.googleusercontent.com/pK5_z_dptxyLuGllTGH4voHjz6WNTv0vgysrHQtmK6X45fl8g_h1ytu1H-ir1ExvY8uph0MbQA=s900-c-k-c0x00ffffff-no-rj" alt="Student Image"></div>
+      <div class="propic"><img src="{{current_user.image}}"></div>
       {% if current_user.basic_mode %}
       <h2 class="name">BASIC</h2>
+                  <div class="comment-box">
+      <form action="/profile" method="post">
+        <input type="hidden" name="type" value="{{ current_user.basic_mode }}">
+        <button type="submit" style="background-color:#2bad79">Become Premium User</button>
+      </form>
       {% else %}
       <h2 class="name">PREMIUM+</h2>
+                                <div class="comment-box">
+      <form action="/profile" method="post">
+        <input type="hidden" name="type" value="{{ current_user.basic_mode }}">
+        <button type="submit" style="background-color:#6b1629">Cancel Subscription</button>
+      </form>
       {% endif %}
 
 
-            <div class="comment-box">
-      <form action="/profile" method="post">
-        <input type="hidden" name="type" value="{{ current_user.basic_mode }}">
-        <button type="submit" style="background-color:#2bad79">Change to different module</button>
-      </form>
+
+
     </div>
 
       <div class="details">

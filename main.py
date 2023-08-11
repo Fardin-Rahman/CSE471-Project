@@ -24,6 +24,7 @@ class Contacts(db.Model, UserMixin):
     email = db.Column(db.String(20), nullable=False)
     password = db.Column(db.String(12), nullable=False)
     basic_mode = db.Column(db.Boolean, nullable=False, default=True)
+    image = db.Column(db.String(80), nullable=False)
 
 
     def get_id(self):
@@ -60,12 +61,15 @@ class Scholarship(db.Model):
 class Query(db.Model):
     q_id= db.Column(db.Integer, primary_key=True)
     question= db.Column(db.String(250),nullable=False)
+    date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    poster = db.Column(db.String(25), nullable=False)
 
 class Reply(db.Model):
     r_id= db.Column(db.Integer, nullable=False)
     answer = db.Column(db.String(250), nullable=False)
     time = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     ans_id = db.Column(db.Integer, primary_key=True)
+    person = db.Column(db.String(25), nullable=False)
 
 import enum
 class WishlistStatus(enum.Enum):
@@ -194,13 +198,36 @@ def profile():
         q = request.form.get('type')
         print(q)
         if q == "True":
-            current_user.basic_mode = False
+            return redirect('/payment')
         else:
             current_user.basic_mode = True
         db.session.commit()
-        print(current_user.basic_mode)
         return redirect('/profile')
     return render_template('profile.html')
+
+@app.route("/payment", methods=['GET', 'POST'])
+def payment():
+    error = None;
+    if (request.method == 'POST'):
+        num = request.form.get('num')
+        my = request.form.get('my')
+        cvc = request.form.get('cvc')
+        name = request.form.get('name')
+
+        #verify number
+        num_flag = num.isdigit() and (len(num)==6)
+        my_flag = False
+        if ('/' in my):
+            x,y = my.split("/")
+            if len(x) == len(y) and len(x) == 2 and x.isdigit() and y.isdigit():
+                my_flag = True
+        cvc_flag  = cvc.isdigit() and (len(cvc)==3)
+        if num_flag and cvc_flag and my_flag:
+            current_user.basic_mode = False
+            db.session.commit()
+            return redirect('/profile')
+        else:error=True
+    return render_template('payment.html',error=error)
 
 
 @app.route("/jobs_user")
@@ -231,13 +258,12 @@ def Discussion():
         q = request.form.get('q')
         id = request.form.get('r_id')
         r = request.form.get('r')
-        print(r)
         if q!=None and len(q) > 0:
-            entry = Query(question=q)
+            entry = Query(question=q, poster=current_user.name)
             db.session.add(entry)
             db.session.commit()
         elif r!=None and len(r) > 0:
-            entry = Reply(r_id=id, answer=r)
+            entry = Reply(r_id=id, answer=r, person=current_user.name)
             db.session.add(entry)
             db.session.commit()
         return redirect('/discussion')
