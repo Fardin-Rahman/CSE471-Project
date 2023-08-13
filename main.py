@@ -5,6 +5,11 @@ import datetime
 pymysql.install_as_MySQLdb()
 from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
 from flask import flash, session, render_template, request, redirect, url_for
+import os
+from datetime import date
+
+datetoday = date.today().strftime("%m_%d_%y")
+datetoday2 = date.today().strftime("%d-%B-%Y")
 
 
 
@@ -453,6 +458,65 @@ def array_merge(first_array, second_array):
         return first_array.union(second_array)
     return False
 
+#### If this file doesn't exist, create it
+if 'tasks.txt' not in os.listdir('.'):
+    with open('tasks.txt','w') as f:
+        f.write('')
+
+
+def gettasklist():
+    with open('tasks.txt','r') as f:
+        tasklist = f.readlines()
+    return tasklist
+
+def createnewtasklist():
+    os.remove('tasks.txt')
+    with open('tasks.txt','w') as f:
+        f.write('')
+
+def updatetasklist(tasklist):
+    os.remove('tasks.txt')
+    with open('tasks.txt','w') as f:
+        f.writelines(tasklist)
+
+
+
+@app.route('/')
+def todo():
+    return render_template('todo.html', datetoday2=datetoday2, tasklist=gettasklist(), l=len(gettasklist()))
+
+
+
+@app.route('/clear')
+def clear_list():
+    createnewtasklist()
+    return render_template('todo.html', datetoday2=datetoday2, tasklist=gettasklist(), l=len(gettasklist()))
+
+
+
+@app.route('/addtask', methods=['POST'])
+def add_task():
+    task = request.form.get('newtask')
+    with open('tasks.txt', 'a') as f:
+        f.writelines(task + '\n')
+    return render_template('todo.html', datetoday2=datetoday2, tasklist=gettasklist(), l=len(gettasklist()))
+
+
+
+@app.route('/deltask', methods=['GET'])
+def remove_task():
+    task_index = int(request.args.get('deltaskid'))
+    tasklist = gettasklist()
+    print(task_index)
+    print(tasklist)
+    if task_index < 0 or task_index > len(tasklist):
+        return render_template('todo.html', datetoday2=datetoday2, tasklist=tasklist, l=len(tasklist),
+                               mess='Invalid Index...')
+    else:
+        removed_task = tasklist.pop(task_index)
+    updatetasklist(tasklist)
+    return render_template('todo.html', datetoday2=datetoday2, tasklist=tasklist, l=len(tasklist))
+
 
 if __name__ == "__main__":
     with app.test_request_context():
@@ -470,6 +534,7 @@ if __name__ == "__main__":
         app.add_url_rule('/profcontact.html','profcontact', profcontact)
         app.add_url_rule('/premium.html', 'premium', premium)
         app.add_url_rule('/cart.html', 'cart', cart)
+        app.add_url_rule('/todo.html', 'todo', todo)
 
 
     app.run(debug=True)

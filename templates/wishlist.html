@@ -1,0 +1,11 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<h2>Wishlist Courses</h2>
+<ul>
+    {% for item in wishlist %}
+    <li>{{ item[1] }}</li>
+    {% endfor %}
+</ul>
+
+{% endblock %}
