@@ -1,0 +1,96 @@
+{% extends "userlayout.html" %}
+{% block body %}
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Communication Platform</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      margin: 0;
+      padding: 0;
+      background-color: #e0d3ed;
+    }
+
+    .innercard {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .question {
+      border: 1px solid #ddd;
+      background-color: #f4f5d0;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .question h2 {
+      font-size: 24px;
+      margin: 0 15 0px;
+      color: #000000;
+    }
+
+    .question p {
+      margin: 0;
+      color: #444;
+    }
+
+    .replies {
+      margin-top: 5px;
+    }
+
+    .reply {
+      border: 1px solid #ddd;
+      background-color: #f9f9f9;
+      padding: 15px;
+      margin-bottom: 2px;
+      border-radius: 5px;
+    }
+
+    .q {
+      border: 1px solid #ddd;
+      background-color: #aef5ca;
+      padding: 15px;
+      margin-top: 20px;
+      margin-bottom: 20px;
+      border-radius: 5px;
+    }
+
+
+    .comment-box button:hover {
+      background-color: #218838;
+    }
+    .date{
+      font-size: 10px;
+    }
+    .who{
+      font-size: 16px;
+      color: #69d184;
+    }
+    .whopost{
+      font-size: 18px;
+      color: #000000;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="innercard">
+    <div class="question">
+
+  <h2>Post Offers</h2>
+      {% for i in result[::-1] %}
+              <div class="q">
+                <div class="whopost"><b>{{ i.name }}:</b></div>
+              <p>{{ i['post'] }}</p>
+                <div class="date">{{ i.time }}</div>
+              </div>
+      {% endfor %}
+
+        <br> <br>
+</body>
+	{% endblock %}

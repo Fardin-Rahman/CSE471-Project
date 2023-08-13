@@ -78,6 +78,13 @@ class Reply(db.Model):
     ans_id = db.Column(db.Integer, primary_key=True)
     person = db.Column(db.String(25), nullable=False)
 
+class Prof_post(db.Model):
+    id= db.Column(db.Integer, primary_key=True)
+    name= db.Column(db.String(250),nullable=False)
+    time = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    post = db.Column(db.String(500), nullable=False)
+
+
 import enum
 class WishlistStatus(enum.Enum):
     no = 'no'
@@ -239,7 +246,6 @@ def payment():
 
 @app.route("/jobs_user")
 def jobs_user():
-    print(current_user.basic_mode)
     res = Jobs.query.filter().all()
     return render_template('jobs_user.html', result=res)
 
@@ -305,6 +311,24 @@ def dashboard2():
 @login_required
 def dashboard():
     return render_template('user.html')
+
+@app.route('/prof_post', methods=['GET', 'POST'])
+def prof_post():
+    if (request.method == 'POST'):
+        q = request.form.get('q')
+        id = request.form.get('r_id')
+        if q != None and len(q) > 0:
+            entry = Prof_post(post=q, name=current_user.FullName)
+            db.session.add(entry)
+            db.session.commit()
+        return redirect('/prof_post')
+    return render_template('prof_post.html', result=Prof_post.query.filter().all())
+
+@app.route('/prof_post_offer')
+def prof_post_offer():
+
+    return render_template('prof_post_offer.html', result=Prof_post.query.filter().all())
+
 
 
 @app.route('/logout', methods=['GET', 'POST'])
@@ -395,7 +419,7 @@ def add_product_to_cart():
         conn.close()
 
 
-@app.route('/')
+@app.route('/cart')
 def cart():
     try:
         conn = db.connect()
