@@ -1,4 +1,4 @@
-{% extends "layout.html" %}
+{% extends "userlayout.html" %}
 {% block body %}
 
 <!-- companies  section start-->
@@ -7,54 +7,102 @@
         <h2 class="services_text" style="font-family: Georgia, serif;">Enroll Our Courses To Boost Your Skills</h2>
     </div>
 </div>
+
 <div class="companies_section layout_padding">
     <div class="container">
         <h1 class="companies_text" style="font-family: Georgia, serif; color:#261113;">Our Available Courses</h1>
         <div class="images_main ">
             <h2 id="demo03"></h2>
             <div class="hover03 column">
-                <div class="course">
 
+
+                {% for i in items[1::]%}
+                <div class="course">
                     <a href="https://www.udemy.com/course/python-core-and-advanced/">
                         <figure>
-                            <img src="https://images.hdqwalls.com/download/python-logo-4k-i6-1600x1200.jpg">
+                            <img src="{{i.image}}">
                         </figure>
-                        <span>Python Basic course</span>
+                        <span>{{i.course_name}}</span>
                     </a>
-                    <br><br>
-                    <button class="wishlist-btn blue-btn">Add to wishlist</button>
-                    <button class="add-to-cart-btn blue-btn">Add to cart</button>
+                    {{wish.user_id}}
+                    <div class="button-container">
+                        {% if current_user.serialno is in wish and i.course_code is in c %}
+                        <form action="/courses" method="post">
+                            <input type="hidden" name="remove" value="{{current_user.serialno}}-{{i.course_code}}">
+                            <button type="submit" class="wishlist-btn blue-btn" style="background-color:red">REMOVE</button>
+                        </form>
+
+                        {% else %}
+                        <form action="/courses" method="post">
+                            <input type="hidden" name="wish" value="{{i.course_code}}">
+                            <button type="submit" class="wishlist-btn blue-btn">Add wishlist</button>
+                        </form>
+                        {% endif %}
+
+                        <form action="/courses" method="post">
+                            <input type="hidden" name="type" value=True>
+                            <button type="submit" class="add-to-cart-btn blue-btn" style="background-color:#04A96D">PURCHASE</button>
+                        </form>
+                    </div>
                 </div>
-                <div class="course">
-                    <a href="https://www.udemy.com/course/java-programming-tutorial-for-beginners/">
-                        <figure>
-                            <img src="https://static.vecteezy.com/system/resources/previews/020/111/553/original/java-editorial-logo-free-download-free-vector.jpg">
-                        </figure>
-                        <span>Java for beginners</span>
-                    </a>
-                    <button class="wishlist-btn blue-btn">Add to wishlist</button>
-                    <button class="add-to-cart-btn blue-btn">Add to cart</button>
-                </div>
-                <div class="course">
-                    <a href="https://www.udemy.com/course/laravel-6-framework/">
-                        <figure>
-                            <img src="https://embed-ssl.wistia.com/deliveries/fece433e54f817872309273fb46fe6e9.jpg">
-                        </figure>
-                        <span>Laravel all in one</span>
-                    </a>
-                    <button class="wishlist-btn blue-btn">Add to wishlist</button>
-                    <button class="add-to-cart-btn blue-btn">Add to cart</button>
-                </div>
-                <div class="course">
-                    <a href="https://www.udemy.com/course/complete-ielts-guide/">
-                        <figure>
-                            <img src="https://images-platform.99static.com/BJn0jaeCJLJf3hJu6UNYolvrd3E=/500x500/top/smart/99designs-contests-attachments/53/53392/attachment_53392740">
-                        </figure>
-                        <span>IELTS Online Course</span>
-                    </a>
-                    <button class="wishlist-btn blue-btn">Add to wishlist</button>
-                    <button class="add-to-cart-btn blue-btn">Add to cart</button>
-                </div>
+
+                {% endfor %}
+
+                <br><br><br><br><br><br><br><br><br><br>
+                <br><br><br><br><br><br><br><br><br><br>
+
+
+
+<!--                <div class="course">-->
+
+<!--                    <a href="https://www.udemy.com/course/python-core-and-advanced/">-->
+<!--                        <figure>-->
+<!--                            <img src="https://images.hdqwalls.com/download/python-logo-4k-i6-1600x1200.jpg">-->
+<!--                        </figure>-->
+<!--                        <span>Python Basic course</span>-->
+<!--                    </a>-->
+<!--                    <br><br>-->
+<!--                    <button class="wishlist-btn blue-btn">Add to wishlist</button>-->
+<!--                    <button class="add-to-cart-btn blue-btn" style="background-color:#04A96D">Add to cart</button>-->
+<!--                </div>-->
+<!--                <div class="course">-->
+<!--                    <a href="https://www.udemy.com/course/java-programming-tutorial-for-beginners/">-->
+<!--                        <figure>-->
+<!--                            <img src="https://static.vecteezy.com/system/resources/previews/020/111/553/original/java-editorial-logo-free-download-free-vector.jpg">-->
+<!--                        </figure>-->
+<!--                        <span>Java for beginners</span>-->
+<!--                    </a>-->
+<!--                    <br><br>-->
+<!--                    <button class="wishlist-btn blue-btn">Add to wishlist</button>-->
+<!--                    <button class="add-to-cart-btn blue-btn" style="background-color:#04A96D">Add to cart</button>-->
+<!--                </div>-->
+<!--                <div class="course">-->
+<!--                    <a href="https://www.udemy.com/course/laravel-6-framework/">-->
+<!--                        <figure>-->
+<!--                            <img src="https://embed-ssl.wistia.com/deliveries/fece433e54f817872309273fb46fe6e9.jpg">-->
+<!--                        </figure>-->
+<!--                        <span>Laravel all in one</span>-->
+<!--                    </a>-->
+<!--                    <br><br>-->
+<!--                    <button class="wishlist-btn blue-btn">Add to wishlist</button>-->
+<!--                    <button class="add-to-cart-btn blue-btn" style="background-color:#04A96D">Add to cart</button>-->
+<!--                </div>-->
+<!--                <div class="course">-->
+<!--                    <a href="https://www.udemy.com/course/complete-ielts-guide/">-->
+<!--                        <figure>-->
+<!--                            <img src="https://images-platform.99static.com/BJn0jaeCJLJf3hJu6UNYolvrd3E=/500x500/top/smart/99designs-contests-attachments/53/53392/attachment_53392740">-->
+<!--                        </figure>-->
+<!--                        <span>IELTS Online Course</span>-->
+<!--                    </a>-->
+<!--                    <br><br>-->
+
+<!--                    <form action="/courses" method="post">-->
+<!--                    <input type="hidden" name="type" value=True>-->
+<!--                    <button type="submit" class="add-to-cart-btn blue-btn" style="background-color:#04A96D">Become Premium User</button>-->
+<!--                  </form>-->
+<!--&lt;!&ndash;                    <button class="wishlist-btn blue-btn">Add to wishlist</button>&ndash;&gt;-->
+<!--&lt;!&ndash;                    <button class="add-to-cart-btn blue-btn" style="background-color:#04A96D">Add to cart</button>&ndash;&gt;-->
+<!--                </div>-->
                 <!-- Add more courses here -->
             </div>
             <br>
@@ -64,9 +112,9 @@
 </div>
 
 <!-- Cart icon and counter -->
-<div id="cart" class="cart-icon">
-    <span id="cartCount">0</span>
-</div>
+<!--<div id="cart" class="cart-icon">-->
+<!--    <span id="cartCount">0</span>-->
+<!--</div>-->
 
 <!-- Javascript files-->
 <script src="js/jquery.min.js"></script>
@@ -109,7 +157,20 @@
 </script>
 
 <style>
+
+
+    .button-container {
+        display: flex;
+        align-items: center;
+        align-items: flex-start;
+    }
+
+    .button-container form {
+        margin-right: 10px;
+    }
+
     .blue-btn {
+        margin-top: 42px;
         background-color: #007bff;
         color: #fff;
         border: none;

@@ -1,11 +1,131 @@
-{% extends "layout.html" %}
+{% extends "userlayout.html" %}
 {% block body %}
 
-<h2>Wishlist Courses</h2>
-<ul>
-    {% for item in wishlist %}
-    <li>{{ item[1] }}</li>
-    {% endfor %}
-</ul>
+<!-- companies  section start-->
+<div class="services_section">
+    <div class="container">
+        <h2 class="services_text" style="font-family: Georgia, serif;">Enroll Our Courses To Boost Your Skills</h2>
+    </div>
+</div>
 
+<div class="companies_section layout_padding">
+    <div class="container">
+        <h1 class="companies_text" style="font-family: Georgia, serif; color:#261113;">Your Wishlist Bucket</h1>
+        <div class="images_main ">
+            <h2 id="demo03"></h2>
+            <div class="hover03 column">
+
+
+                {% for i in items[1::]%}
+                {% if current_user.serialno is in wish and i.course_code is in c %}
+                <div class="course">
+                    <a href="https://www.udemy.com/course/python-core-and-advanced/">
+                        <figure>
+                            <img src="{{i.image}}">
+                        </figure>
+                        <span>{{i.course_name}}</span>
+                    </a>
+                    <div class="button-container">
+                        <form action="/wishlist" method="post">
+                            <input type="hidden" name="remove" value="{{current_user.serialno}}-{{i.course_code}}">
+                            <button type="submit" class="wishlist-btn blue-btn" style="background-color:red">REMOVE</button>
+                        </form>
+
+                        <form action="/wishlist" method="post">
+                            <input type="hidden" name="type" value=True>
+                            <button type="submit" class="add-to-cart-btn blue-btn" style="background-color:#04A96D">PURCHASE</button>
+                        </form>
+                    </div>
+
+                </div>
+                {% endif %}
+                {% endfor %}
+                <br><br><br><br><br><br><br><br><br><br>
+
+            </div>
+            <br>
+            <br>
+        </div>
+    </div>
+</div>
+
+
+<!-- Javascript files-->
+<script src="js/jquery.min.js"></script>
+<script src="js/popper.min.js"></script>
+<script src="js/bootstrap.bundle.min.js"></script>
+<script src="js/jquery-3.0.0.min.js"></script>
+<script src="js/plugin.js"></script>
+<!-- sidebar -->
+<script src="js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="js/custom.js"></script>
+<!-- javascript -->
+<script src="js/owl.carousel.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $(".fancybox").fancybox({
+            openEffect: "none",
+            closeEffect: "none"
+        });
+
+        // Initialize cart count to 0
+        let cartCount = 0;
+
+        // Get the cartCount element
+        const cartCountElement = document.getElementById("cartCount");
+
+        // Get all the 'Add to cart' buttons
+        const addToCartButtons = document.querySelectorAll(".add-to-cart-btn");
+
+        // Add event listeners to each 'Add to cart' button
+        addToCartButtons.forEach((button) => {
+            button.addEventListener("click", () => {
+                // Increase cart count by 1
+                cartCount++;
+                // Update the cartCountElement text
+                cartCountElement.textContent = cartCount;
+            });
+        });
+    });
+</script>
+
+<style>
+
+
+    .button-container {
+        display: flex;
+        align-items: center;
+        align-items: flex-start;
+    }
+
+    .button-container form {
+        margin-right: 10px;
+    }
+
+    .blue-btn {
+        margin-top: 42px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        padding: 8px 16px;
+        cursor: pointer;
+        font-size: 14px;
+        border-radius: 5px;
+    }
+
+    .blue-btn:hover {
+        background-color: #0056b3;
+    }
+     #cart-quantity {
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .button-container {
+      display: flex;
+</style>
+
+</body>
+</html>
 {% endblock %}

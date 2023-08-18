@@ -136,6 +136,7 @@
       <tbody>
         {% for item in result %}
           <tr>
+            {% if item['deadline'].year>=2023 and item['deadline'].month>=10 or current_user.basic_mode%}
             <td>{{ item['name'] }}</td>
             <td>{{ item['university'] }}</td>
             {% if not current_user.basic_mode %}
@@ -143,6 +144,25 @@
             <td>{{ item['country'] }}</td>
             {% endif %}
             <td>{{ item['deadline'] }}</td>
+
+            {% else %}
+            <td style="background-color: #f09f99">{{ item['name'] }}</td>
+            <td style="background-color: #f09f99">{{ item['university'] }}</td>
+            {% if not current_user.basic_mode %}
+            <td style="background-color: #f09f99">{{ item['requirement'] }}</td>
+            <td style="background-color: #f09f99">{{ item['country'] }}</td>
+            {% endif %}
+            <td style="background-color: #f09f99">{{ item['deadline'] }}</td>
+            {% endif %}
+
+
+
+<!--            -->
+<!--            {% if item['deadline'].year>=2023 and item['deadline'].month>=10 %}-->
+<!--            <td style="background-color: red">{{ item['deadline'] }}</td>-->
+<!--            {% endif %}-->
+
+
           </tr>
         {% endfor %}
       </tbody>

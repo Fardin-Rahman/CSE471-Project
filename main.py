@@ -85,6 +85,21 @@ class Prof_post(db.Model):
     post = db.Column(db.String(500), nullable=False)
 
 
+class Cart(db.Model):
+    id= db.Column(db.Integer, primary_key=True)
+    course_name= db.Column(db.String(250),nullable=False)
+    course_code = db.Column(db.String(250), nullable=False)
+    image = db.Column(db.String(80), nullable=False)
+    price = db.Column(db.Integer, nullable=False)
+
+class Wishlist(db.Model):
+    unique= db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, nullable=False)
+    wish_list = db.Column(db.String(20), nullable=False)
+
+
+
+
 import enum
 class WishlistStatus(enum.Enum):
     no = 'no'
@@ -116,9 +131,105 @@ def home():
     return render_template('index.html')
 
 
-@app.route("/courses")
+@app.route("/courses", methods=['GET', 'POST'])
 def courses():
-    return render_template('courses.html')
+    r = Cart.query.filter().all()
+    wi = Wishlist.query.filter().all()
+    ids=[]
+    course_ids=[]
+    for i in wi:ids.append(i.user_id)
+    for i in wi:
+        if i.user_id == current_user.serialno:
+            course_ids.append(i.wish_list)
+
+    if (request.method == 'POST'):
+        q = request.form.get('type')
+        w = request.form.get('wish')
+        rem = request.form.get('remove')
+
+        if rem != None:
+            i,c=rem.split('-')
+            entry_to_delete = Wishlist.query.filter_by(user_id=i, wish_list=c).first()
+            db.session.delete(entry_to_delete)
+            db.session.commit()
+            return redirect('/courses')
+
+        if w!=None and w not in course_ids:
+            entry = Wishlist(user_id=current_user.serialno, wish_list=w)
+            db.session.add(entry)
+            db.session.commit()
+            return redirect('/courses')
+
+        if q == 'True':
+            return redirect('/payment_course')
+        db.session.commit()
+        return redirect('/courses')
+    return render_template('courses.html', items=r, wish=ids, c = course_ids)
+
+@app.route("/payment_course", methods=['GET', 'POST'])
+def payment_course():
+    error = None;
+    if (request.method == 'POST'):
+        num = request.form.get('num')
+        my = request.form.get('my')
+        cvc = request.form.get('cvc')
+        name = request.form.get('name')
+
+        #verify number
+        num_flag = num.isdigit() and (len(num)==6)
+        my_flag = False
+        if ('/' in my):
+            x,y = my.split("/")
+            if len(x) == len(y) and len(x) == 2 and x.isdigit() and y.isdigit():
+                my_flag = True
+        cvc_flag  = cvc.isdigit() and (len(cvc)==3)
+        if num_flag and cvc_flag and my_flag:
+            current_user.basic_mode = False
+            db.session.commit()
+            return redirect('/courses')
+        else:error=True
+    return render_template('payment_course.html',error=error)
+
+
+
+
+@app.route("/wishlist", methods=['GET', 'POST'])
+def Wish_list():
+    r = Cart.query.filter().all()
+    wi = Wishlist.query.filter().all()
+    ids=[]
+    course_ids=[]
+    for i in wi:ids.append(i.user_id)
+    for i in wi:
+        if i.user_id == current_user.serialno:
+            course_ids.append(i.wish_list)
+
+    if (request.method == 'POST'):
+        q = request.form.get('type')
+        w = request.form.get('wish')
+        rem = request.form.get('remove')
+
+        if rem != None:
+            i,c=rem.split('-')
+            entry_to_delete = Wishlist.query.filter_by(user_id=i, wish_list=c).first()
+            db.session.delete(entry_to_delete)
+            db.session.commit()
+            return redirect('/wishlist')
+
+        if w!=None and w not in course_ids:
+            entry = Wishlist(user_id=current_user.serialno, wish_list=w)
+            db.session.add(entry)
+            db.session.commit()
+            return redirect('/wishlist')
+
+        if q == 'True':
+            return redirect('/payment_course')
+        db.session.commit()
+        return redirect('/wishlist')
+    return render_template('wishlist.html', items=r, wish=ids, c = course_ids)
+
+
+
 
 @app.route("/aboutus")
 def aboutus():
@@ -138,7 +249,7 @@ def contact():
             name = request.form.get('name')
             email = request.form.get('email')
             password = request.form.get('password')
-            entry = Contacts(name=name,email = email, password=password, basic_mode=1 )
+            entry = Contacts(name=name,email = email, password=password, basic_mode=1, image='https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg?20200913095930' )
             db.session.add(entry)
             db.session.commit()
         return render_template('contact.html')
@@ -338,173 +449,167 @@ def logout():
     return redirect(url_for('home'))
 
 
-@app.route('/premium')
-def premium():
-    courses = Premium.query.all()
-    total_courses_in_cart = sum(1 for course in courses if course.cart == CartStatus.yes)
-    return render_template('premium.html', courses=courses, total_courses_in_cart=total_courses_in_cart)
-
-
-@app.route('/add_course', methods=['POST'])
-def add_course():
-    course_name = request.form['course_name']
-    wishlist_status = request.form.get('wishlist', 'no')
-    cart_status = request.form.get('cart', 'no')
-
-    wishlist_status = WishlistStatus.yes if wishlist_status == 'yes' else WishlistStatus.no
-    cart_status = CartStatus.yes if cart_status == 'yes' else CartStatus.no
-
-    course = Premium(c_name=course_name, wishlist=wishlist_status, cart=cart_status)
-    db.session.add(course)
-    db.session.commit()
-
-    return "Juha edited successfully."
-
-
-@app.route('/add', methods=['POST'])
-def add_product_to_cart():
-    cursor = None
-    try:
-        _quantity = int(request.form['quantity'])
-        _code = request.form['code']
-        # validate the received values
-        if _quantity and _code and request.method == 'POST':
-            conn = db.connect()
-            cursor = conn.cursor(pymysql.cursors.DictCursor)
-            cursor.execute("SELECT * FROM cart WHERE code=%s", _code)
-            row = cursor.fetchone()
-
-            itemArray = {row['code']: {'course_name': row['course_name'], 'course_code': row['coursecode'],
-                                       'quantity': _quantity, 'price': row['price'], 'image': row['image'],
-                                       'total_price': _quantity * row['price']}}
-
-            all_total_price = 0
-            all_total_quantity = 0
-
-            session.modified = True
-            if 'cart_item' in session:
-                if row['course_code'] in session['cart_item']:
-                    for key, value in session['cart_item'].items():
-                        if row['course_code'] == key:
-                            # session.modified = True
-                            # if session['cart_item'][key]['quantity'] is not None:
-                            #    session['cart_item'][key]['quantity'] = 0
-                            old_quantity = session['cart_item'][key]['quantity']
-                            total_quantity = old_quantity + _quantity
-                            session['cart_item'][key]['quantity'] = total_quantity
-                            session['cart_item'][key]['total_price'] = total_quantity * row['price']
-                else:
-                    session['cart_item'] = array_merge(session['cart_item'], itemArray)
-
-                for key, value in session['cart_item'].items():
-                    individual_quantity = int(session['cart_item'][key]['quantity'])
-                    individual_price = float(session['cart_item'][key]['total_price'])
-                    all_total_quantity = all_total_quantity + individual_quantity
-                    all_total_price = all_total_price + individual_price
-            else:
-                session['cart_item'] = itemArray
-                all_total_quantity = all_total_quantity + _quantity
-                all_total_price = all_total_price + _quantity * row['price']
-
-            session['all_total_quantity'] = all_total_quantity
-            session['all_total_price'] = all_total_price
-
-            return redirect(url_for('.cart'))
-        else:
-            return 'Error while adding item to cart'
-    except Exception as e:
-        print(e)
-    finally:
-        cursor.close()
-        conn.close()
+# @app.route('/premium')
+# def premium():
+#     courses = Premium.query.all()
+#     total_courses_in_cart = sum(1 for course in courses if course.cart == CartStatus.yes)
+#     return render_template('premium.html', courses=courses, total_courses_in_cart=total_courses_in_cart)
+#
+#
+# @app.route('/add_course', methods=['POST'])
+# def add_course():
+#     course_name = request.form['course_name']
+#     wishlist_status = request.form.get('wishlist', 'no')
+#     cart_status = request.form.get('cart', 'no')
+#
+#     wishlist_status = WishlistStatus.yes if wishlist_status == 'yes' else WishlistStatus.no
+#     cart_status = CartStatus.yes if cart_status == 'yes' else CartStatus.no
+#
+#     course = Premium(c_name=course_name, wishlist=wishlist_status, cart=cart_status)
+#     db.session.add(course)
+#     db.session.commit()
+#
+#     return "Juha edited successfully."
+#
+#
+# @app.route('/add', methods=['POST'])
+# def add_product_to_cart():
+#     cursor = None
+#     try:
+#         _quantity = int(request.form['quantity'])
+#         _code = request.form['code']
+#         # validate the received values
+#         if _quantity and _code and request.method == 'POST':
+#             conn = db.connect()
+#             cursor = conn.cursor(pymysql.cursors.DictCursor)
+#             cursor.execute("SELECT * FROM cart WHERE code=%s", _code)
+#             row = cursor.fetchone()
+#
+#             itemArray = {row['code']: {'course_name': row['course_name'], 'course_code': row['coursecode'],
+#                                        'quantity': _quantity, 'price': row['price'], 'image': row['image'],
+#                                        'total_price': _quantity * row['price']}}
+#
+#             all_total_price = 0
+#             all_total_quantity = 0
+#
+#             session.modified = True
+#             if 'cart_item' in session:
+#                 if row['course_code'] in session['cart_item']:
+#                     for key, value in session['cart_item'].items():
+#                         if row['course_code'] == key:
+#                             # session.modified = True
+#                             # if session['cart_item'][key]['quantity'] is not None:
+#                             #    session['cart_item'][key]['quantity'] = 0
+#                             old_quantity = session['cart_item'][key]['quantity']
+#                             total_quantity = old_quantity + _quantity
+#                             session['cart_item'][key]['quantity'] = total_quantity
+#                             session['cart_item'][key]['total_price'] = total_quantity * row['price']
+#                 else:
+#                     session['cart_item'] = array_merge(session['cart_item'], itemArray)
+#
+#                 for key, value in session['cart_item'].items():
+#                     individual_quantity = int(session['cart_item'][key]['quantity'])
+#                     individual_price = float(session['cart_item'][key]['total_price'])
+#                     all_total_quantity = all_total_quantity + individual_quantity
+#                     all_total_price = all_total_price + individual_price
+#             else:
+#                 session['cart_item'] = itemArray
+#                 all_total_quantity = all_total_quantity + _quantity
+#                 all_total_price = all_total_price + _quantity * row['price']
+#
+#             session['all_total_quantity'] = all_total_quantity
+#             session['all_total_price'] = all_total_price
+#
+#             return redirect(url_for('.cart'))
+#         else:
+#             return 'Error while adding item to cart'
+#     except Exception as e:
+#         print(e)
+#     finally:
+#         cursor.close()
+#         conn.close()
 
 
 @app.route('/cart')
 def cart():
-    try:
-        conn = db.connect()
-        cursor = conn.cursor(pymysql.cursors.DictCursor)
-        cursor.execute("SELECT * FROM cart")
-        rows = cursor.fetchall()
-        return render_template('cart.html', products=rows)
-    except Exception as e:
-        print(e)
-    finally:
-        cursor.close()
-        conn.close()
-
-
-@app.route('/empty')
-def empty_cart():
-    try:
-        session.clear()
-        return redirect(url_for('.cart'))
-    except Exception as e:
-        print(e)
-
-
-@app.route('/delete/<string:code>')
-def delete_product(code):
-    try:
-        all_total_price = 0
-        all_total_quantity = 0
-        session.modified = True
-
-        for item in session['cart_item'].items():
-            if item[0] == code:
-                session['cart_item'].pop(item[0], None)
-                if 'cart_item' in session:
-                    for key, value in session['cart_item'].items():
-                        individual_quantity = int(session['cart_item'][key]['quantity'])
-                        individual_price = float(session['cart_item'][key]['total_price'])
-                        all_total_quantity = all_total_quantity + individual_quantity
-                        all_total_price = all_total_price + individual_price
-                break
-
-        if all_total_quantity == 0:
-            session.clear()
-        else:
-            session['all_total_quantity'] = all_total_quantity
-            session['all_total_price'] = all_total_price
-
-        # return redirect('/')
-        return redirect(url_for('.cart'))
-    except Exception as e:
-        print(e)
-
-
-def array_merge(first_array, second_array):
-    if isinstance(first_array, list) and isinstance(second_array, list):
-        return first_array + second_array
-    elif isinstance(first_array, dict) and isinstance(second_array, dict):
-        return dict(list(first_array.items()) + list(second_array.items()))
-    elif isinstance(first_array, set) and isinstance(second_array, set):
-        return first_array.union(second_array)
-    return False
-
-#### If this file doesn't exist, create it
-if 'tasks.txt' not in os.listdir('.'):
-    with open('tasks.txt','w') as f:
-        f.write('')
-
-
-def gettasklist():
-    with open('tasks.txt','r') as f:
-        tasklist = f.readlines()
-    return tasklist
-
-def createnewtasklist():
-    os.remove('tasks.txt')
-    with open('tasks.txt','w') as f:
-        f.write('')
-
-def updatetasklist(tasklist):
-    os.remove('tasks.txt')
-    with open('tasks.txt','w') as f:
-        f.writelines(tasklist)
+        rows = Cart.query.filter().all()
+        print(rows)
+        return render_template('cart.html', carts=rows)
 
 
 
+# @app.route('/empty')
+# def empty_cart():
+#     try:
+#         session.clear()
+#         return redirect(url_for('.cart'))
+#     except Exception as e:
+#         print(e)
+#
+#
+# @app.route('/delete/<string:code>')
+# def delete_product(code):
+#     try:
+#         all_total_price = 0
+#         all_total_quantity = 0
+#         session.modified = True
+#
+#         for item in session['cart_item'].items():
+#             if item[0] == code:
+#                 session['cart_item'].pop(item[0], None)
+#                 if 'cart_item' in session:
+#                     for key, value in session['cart_item'].items():
+#                         individual_quantity = int(session['cart_item'][key]['quantity'])
+#                         individual_price = float(session['cart_item'][key]['total_price'])
+#                         all_total_quantity = all_total_quantity + individual_quantity
+#                         all_total_price = all_total_price + individual_price
+#                 break
+#
+#         if all_total_quantity == 0:
+#             session.clear()
+#         else:
+#             session['all_total_quantity'] = all_total_quantity
+#             session['all_total_price'] = all_total_price
+#
+#         # return redirect('/')
+#         return redirect(url_for('.cart'))
+#     except Exception as e:
+#         print(e)
+#
+#
+# def array_merge(first_array, second_array):
+#     if isinstance(first_array, list) and isinstance(second_array, list):
+#         return first_array + second_array
+#     elif isinstance(first_array, dict) and isinstance(second_array, dict):
+#         return dict(list(first_array.items()) + list(second_array.items()))
+#     elif isinstance(first_array, set) and isinstance(second_array, set):
+#         return first_array.union(second_array)
+#     return False
+#
+# #### If this file doesn't exist, create it
+# if 'tasks.txt' not in os.listdir('.'):
+#     with open('tasks.txt','w') as f:
+#         f.write('')
+#
+#
+# def gettasklist():
+#     with open('tasks.txt','r') as f:
+#         tasklist = f.readlines()
+#     return tasklist
+#
+# def createnewtasklist():
+#     os.remove('tasks.txt')
+#     with open('tasks.txt','w') as f:
+#         f.write('')
+#
+# def updatetasklist(tasklist):
+#     os.remove('tasks.txt')
+#     with open('tasks.txt','w') as f:
+#         f.writelines(tasklist)
+#
+#
+#
+'''
 @app.route('/')
 def todo():
     return render_template('todo.html', datetoday2=datetoday2, tasklist=gettasklist(), l=len(gettasklist()))
@@ -515,31 +620,31 @@ def todo():
 def clear_list():
     createnewtasklist()
     return render_template('todo.html', datetoday2=datetoday2, tasklist=gettasklist(), l=len(gettasklist()))
+'''
+#
 
-
-
-@app.route('/addtask', methods=['POST'])
-def add_task():
-    task = request.form.get('newtask')
-    with open('tasks.txt', 'a') as f:
-        f.writelines(task + '\n')
-    return render_template('todo.html', datetoday2=datetoday2, tasklist=gettasklist(), l=len(gettasklist()))
-
-
-
-@app.route('/deltask', methods=['GET'])
-def remove_task():
-    task_index = int(request.args.get('deltaskid'))
-    tasklist = gettasklist()
-    print(task_index)
-    print(tasklist)
-    if task_index < 0 or task_index > len(tasklist):
-        return render_template('todo.html', datetoday2=datetoday2, tasklist=tasklist, l=len(tasklist),
-                               mess='Invalid Index...')
-    else:
-        removed_task = tasklist.pop(task_index)
-    updatetasklist(tasklist)
-    return render_template('todo.html', datetoday2=datetoday2, tasklist=tasklist, l=len(tasklist))
+# @app.route('/addtask', methods=['POST'])
+# def add_task():
+#     task = request.form.get('newtask')
+#     with open('tasks.txt', 'a') as f:
+#         f.writelines(task + '\n')
+#     return render_template('todo.html', datetoday2=datetoday2, tasklist=gettasklist(), l=len(gettasklist()))
+#
+#
+#
+# @app.route('/deltask', methods=['GET'])
+# def remove_task():
+#     task_index = int(request.args.get('deltaskid'))
+#     tasklist = gettasklist()
+#     print(task_index)
+#     print(tasklist)
+#     if task_index < 0 or task_index > len(tasklist):
+#         return render_template('todo.html', datetoday2=datetoday2, tasklist=tasklist, l=len(tasklist),
+#                                mess='Invalid Index...')
+#     else:
+#         removed_task = tasklist.pop(task_index)
+#     updatetasklist(tasklist)
+#     return render_template('todo.html', datetoday2=datetoday2, tasklist=tasklist, l=len(tasklist))
 
 
 if __name__ == "__main__":
@@ -556,9 +661,9 @@ if __name__ == "__main__":
         app.add_url_rule('/userP.html', 'userP', userP)
         app.add_url_rule('/loginP.html','loginP', loginP)
         app.add_url_rule('/profcontact.html','profcontact', profcontact)
-        app.add_url_rule('/premium.html', 'premium', premium)
+        # app.add_url_rule('/premium.html', 'premium', premium)
         app.add_url_rule('/cart.html', 'cart', cart)
-        app.add_url_rule('/todo.html', 'todo', todo)
+        # app.add_url_rule('/todo.html', 'todo', todo)
 
 
     app.run(debug=True)

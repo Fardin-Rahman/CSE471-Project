@@ -29,8 +29,39 @@
 <link rel="stylesheet" href="{{ url_for('static', filename= 'css/owl.carousel.min.css') }}">
 <link rel="stylesoeet" href="{{ url_for('static', filename= 'css/owl.theme.default.min.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename= 'https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.css') }}" media="screen">
+    <style>
 
+        .dropdown {
+
+          position: relative;
+          display: inline-block;
+        }
+
+        .dropdown-content {
+          display: none;
+          position: absolute;
+          background-color: #f1f1f1;
+          min-width: 160px;
+          box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+          z-index: 1;
+        }
+
+        .dropdown-content a {
+          color: black;
+          padding: 12px 16px;
+          text-decoration: none;
+          display: block;
+        }
+
+        .dropdown-content a:hover {background-color: #ddd;}
+
+        .dropdown:hover .dropdown-content {display: block;}
+
+        .dropdown:hover .dropbtn {background-color: #3e8e41;}
+        </style>
 </head>
+
+
 <body>
 	<!-- header section start-->
 	<nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -60,12 +91,20 @@
                 </li>
 
                 <li class="nav-item">
-                   <a class="nav-link" href="/profile">Profile</a>
+                   <a class="nav-link" href="/profile">PROFILE</a>
                 </li>
 
                 <li class="nav-item">
-                   <a class="nav-link" href="/todo.html">TODO</a>
+                   <a class="nav-link" href="/courses">COURSES</a>
                 </li>
+
+                <div class="dropdown">
+                    <button class="nav-link">OTHERs ↓</button>
+                    <div class="dropdown-content">
+                        <a href="todo.html">TO-DO</a>
+                        <a href="/wishlist">WISHLIST</a>
+                    </div>
+                </div>
 
                 <li class="nav-item">
                    <a class="nav-link" href="/logout">Log out</a>
@@ -76,19 +115,6 @@
 
 {% block body %} {% endblock %}
 
-
-<!-- footer section start-->
-<!--div class="footer_section layout_padding" style="background-color: #2A355C;">
-   <div class="container">
-      <h1 class="subscribr_text">Sign Up Now</h1>
-      <p class="lorem_text">There are many variations of passages of Lorem Ipsum available, but the majority have</p>
-      <div class="box_main_2">
-         <textarea type="" class="email_bt_2" placeholder="Enter Your Email" name=""></textarea>
-      </div>
-      <button class="subscribe_bt_2"><a href="#">Subscribe</a></button>
-   </div>
-</div-->
-<!-- footer section end-->
 
 <!-- copyright section start-->
 <div class="copyright_section">
