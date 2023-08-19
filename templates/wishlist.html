@@ -31,10 +31,19 @@
                             <button type="submit" class="wishlist-btn blue-btn" style="background-color:red">REMOVE</button>
                         </form>
 
+                        {% if current_user.serialno is in ids_p and i.course_code is in course_ids_p %}
                         <form action="/wishlist" method="post">
-                            <input type="hidden" name="type" value=True>
+                            <input type="hidden" name="unenroll" value="{{current_user.serialno}}-{{i.course_code}}">
+                            <button type="submit" class="add-to-cart-btn blue-btn" style="background-color:red">UNENROLL</button>
+                        </form>
+
+                        {% else %}
+                        <form action="/wishlist" method="post">
+                            <input type="hidden" name="type" value={{i.course_code}}>
                             <button type="submit" class="add-to-cart-btn blue-btn" style="background-color:#04A96D">PURCHASE</button>
                         </form>
+
+                        {% endif %}
                     </div>
 
                 </div>

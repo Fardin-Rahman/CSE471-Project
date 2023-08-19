@@ -7,7 +7,7 @@ from flask_login import UserMixin, login_user, LoginManager, login_required, log
 from flask import flash, session, render_template, request, redirect, url_for
 import os
 from datetime import date
-
+course_taken = None
 datetoday = date.today().strftime("%m_%d_%y")
 datetoday2 = date.today().strftime("%d-%B-%Y")
 
@@ -98,6 +98,10 @@ class Wishlist(db.Model):
     wish_list = db.Column(db.String(20), nullable=False)
 
 
+class Purchase(db.Model):
+    id= db.Column(db.Integer, primary_key=True)
+    user = db.Column(db.Integer, nullable=False)
+    course = db.Column(db.String(20), nullable=False)
 
 
 import enum
@@ -135,6 +139,7 @@ def home():
 def courses():
     r = Cart.query.filter().all()
     wi = Wishlist.query.filter().all()
+    pur = Purchase.query.filter().all()
     ids=[]
     course_ids=[]
     for i in wi:ids.append(i.user_id)
@@ -142,29 +147,40 @@ def courses():
         if i.user_id == current_user.serialno:
             course_ids.append(i.wish_list)
 
+    ids_pur = []
+    course_ids_pur = []
+    for i in pur: ids_pur.append(i.user)
+    for i in pur:
+        if i.user == current_user.serialno:
+            course_ids_pur.append(i.course)
     if (request.method == 'POST'):
         q = request.form.get('type')
         w = request.form.get('wish')
         rem = request.form.get('remove')
-
+        unen = request.form.get('unenroll')
         if rem != None:
             i,c=rem.split('-')
             entry_to_delete = Wishlist.query.filter_by(user_id=i, wish_list=c).first()
             db.session.delete(entry_to_delete)
             db.session.commit()
             return redirect('/courses')
-
         if w!=None and w not in course_ids:
             entry = Wishlist(user_id=current_user.serialno, wish_list=w)
             db.session.add(entry)
             db.session.commit()
             return redirect('/courses')
+        if unen!=None:
+            i, c = unen.split('-')
+            entry_to_delete = Purchase.query.filter_by(user=i, course=c).first()
+            db.session.delete(entry_to_delete)
+            db.session.commit()
+            return redirect('/courses')
 
-        if q == 'True':
+        if q != None:
+            global course_taken
+            course_taken=q
             return redirect('/payment_course')
-        db.session.commit()
-        return redirect('/courses')
-    return render_template('courses.html', items=r, wish=ids, c = course_ids)
+    return render_template('courses.html', items=r, wish=ids, c = course_ids, pur=pur, ids_p=ids_pur, course_ids_p=course_ids_pur)
 
 @app.route("/payment_course", methods=['GET', 'POST'])
 def payment_course():
@@ -184,30 +200,85 @@ def payment_course():
                 my_flag = True
         cvc_flag  = cvc.isdigit() and (len(cvc)==3)
         if num_flag and cvc_flag and my_flag:
-            current_user.basic_mode = False
+            global course_taken
+            print(course_taken)
+            entry = Purchase(user=current_user.serialno, course=course_taken)
+            db.session.add(entry)
             db.session.commit()
-            return redirect('/courses')
+            course_taken=None
+            return redirect('/enroll_courses')
         else:error=True
     return render_template('payment_course.html',error=error)
 
 
+@app.route("/enroll_courses", methods=['GET', 'POST'])
+def Enroll_courses():
+    r = Cart.query.filter().all()
+    wi = Wishlist.query.filter().all()
+    pur = Purchase.query.filter().all()
+    ids = []
+    course_ids = []
+    for i in wi: ids.append(i.user_id)
+    for i in wi:
+        if i.user_id == current_user.serialno:
+            course_ids.append(i.wish_list)
+
+    ids_pur = []
+    course_ids_pur = []
+    for i in pur: ids_pur.append(i.user)
+    for i in pur:
+        if i.user == current_user.serialno:
+            course_ids_pur.append(i.course)
+    if (request.method == 'POST'):
+        w = request.form.get('wish')
+        rem = request.form.get('remove')
+        unen = request.form.get('unenroll')
+        if rem != None:
+            i, c = rem.split('-')
+            entry_to_delete = Wishlist.query.filter_by(user_id=i, wish_list=c).first()
+            db.session.delete(entry_to_delete)
+            db.session.commit()
+            return redirect('/enroll_courses')
+        if w != None and w not in course_ids:
+            entry = Wishlist(user_id=current_user.serialno, wish_list=w)
+            db.session.add(entry)
+            db.session.commit()
+            return redirect('/enroll_courses')
+        if unen != None:
+            i, c = unen.split('-')
+            entry_to_delete = Purchase.query.filter_by(user=i, course=c).first()
+            db.session.delete(entry_to_delete)
+            db.session.commit()
+            return redirect('/enroll_courses')
+
+    return render_template('enroll_courses.html', items=r, wish=ids, c=course_ids, pur=pur, ids_p=ids_pur,
+                           course_ids_p=course_ids_pur)
 
 
 @app.route("/wishlist", methods=['GET', 'POST'])
 def Wish_list():
     r = Cart.query.filter().all()
     wi = Wishlist.query.filter().all()
-    ids=[]
-    course_ids=[]
-    for i in wi:ids.append(i.user_id)
+    pur = Purchase.query.filter().all()
+    ids = []
+    course_ids = []
+    for i in wi: ids.append(i.user_id)
     for i in wi:
         if i.user_id == current_user.serialno:
             course_ids.append(i.wish_list)
+
+    ids_pur = []
+    course_ids_pur = []
+    for i in pur: ids_pur.append(i.user)
+    for i in pur:
+        if i.user == current_user.serialno:
+            course_ids_pur.append(i.course)
 
     if (request.method == 'POST'):
         q = request.form.get('type')
         w = request.form.get('wish')
         rem = request.form.get('remove')
+        unen = request.form.get('unenroll')
 
         if rem != None:
             i,c=rem.split('-')
@@ -222,11 +293,19 @@ def Wish_list():
             db.session.commit()
             return redirect('/wishlist')
 
-        if q == 'True':
+        if unen != None:
+            i, c = unen.split('-')
+            entry_to_delete = Purchase.query.filter_by(user=i, course=c).first()
+            db.session.delete(entry_to_delete)
+            db.session.commit()
+            return redirect('/wishlist')
+
+        if q != None:
+            global course_taken
+            course_taken = q
             return redirect('/payment_course')
-        db.session.commit()
-        return redirect('/wishlist')
-    return render_template('wishlist.html', items=r, wish=ids, c = course_ids)
+    return render_template('wishlist.html', items=r, wish=ids, c = course_ids,pur=pur, ids_p=ids_pur,
+                           course_ids_p=course_ids_pur)
 
 
 

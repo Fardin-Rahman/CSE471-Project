@@ -17,6 +17,7 @@
 
 
                 {% for i in items[1::]%}
+                {% if current_user.serialno is in ids_p and i.course_code is in course_ids_p %}
                 <div class="course">
                     <a href="https://www.udemy.com/course/python-core-and-advanced/">
                         <figure>
@@ -26,34 +27,28 @@
                     </a>
                     <div class="button-container">
                         {% if current_user.serialno is in wish and i.course_code is in c %}
-                        <form action="/courses" method="post">
+                        <form action="/enroll_courses" method="post">
                             <input type="hidden" name="remove" value="{{current_user.serialno}}-{{i.course_code}}">
                             <button type="submit" class="wishlist-btn blue-btn" style="background-color:red">REMOVE</button>
                         </form>
 
                         {% else %}
-                        <form action="/courses" method="post">
+                        <form action="/enroll_courses" method="post">
                             <input type="hidden" name="wish" value="{{i.course_code}}">
                             <button type="submit" class="wishlist-btn blue-btn">Add wishlist</button>
                         </form>
                         {% endif %}
 
-                        {% if current_user.serialno is in ids_p and i.course_code is in course_ids_p %}
-                        <form action="/courses" method="post">
+
+                        <form action="/enroll_courses" method="post">
                             <input type="hidden" name="unenroll" value="{{current_user.serialno}}-{{i.course_code}}">
                             <button type="submit" class="add-to-cart-btn blue-btn" style="background-color:red">UNENROLL</button>
                         </form>
 
-                        {% else %}
-                        <form action="/courses" method="post">
-                            <input type="hidden" name="type" value={{i.course_code}}>
-                            <button type="submit" class="add-to-cart-btn blue-btn" style="background-color:#04A96D">PURCHASE</button>
-                        </form>
 
-                        {% endif %}
                     </div>
                 </div>
-
+                {% endif %}
                 {% endfor %}
 
                 <br><br><br><br><br><br><br><br><br><br>
