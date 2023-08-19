@@ -103,6 +103,11 @@ class Purchase(db.Model):
     user = db.Column(db.Integer, nullable=False)
     course = db.Column(db.String(20), nullable=False)
 
+class Task(db.Model):
+    id= db.Column(db.Integer, primary_key=True)
+    user = db.Column(db.Integer, nullable=False)
+    description = db.Column(db.String(255), nullable=False)
+    date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
 import enum
 class WishlistStatus(enum.Enum):
@@ -616,114 +621,31 @@ def cart():
         return render_template('cart.html', carts=rows)
 
 
-
-# @app.route('/empty')
-# def empty_cart():
-#     try:
-#         session.clear()
-#         return redirect(url_for('.cart'))
-#     except Exception as e:
-#         print(e)
-#
-#
-# @app.route('/delete/<string:code>')
-# def delete_product(code):
-#     try:
-#         all_total_price = 0
-#         all_total_quantity = 0
-#         session.modified = True
-#
-#         for item in session['cart_item'].items():
-#             if item[0] == code:
-#                 session['cart_item'].pop(item[0], None)
-#                 if 'cart_item' in session:
-#                     for key, value in session['cart_item'].items():
-#                         individual_quantity = int(session['cart_item'][key]['quantity'])
-#                         individual_price = float(session['cart_item'][key]['total_price'])
-#                         all_total_quantity = all_total_quantity + individual_quantity
-#                         all_total_price = all_total_price + individual_price
-#                 break
-#
-#         if all_total_quantity == 0:
-#             session.clear()
-#         else:
-#             session['all_total_quantity'] = all_total_quantity
-#             session['all_total_price'] = all_total_price
-#
-#         # return redirect('/')
-#         return redirect(url_for('.cart'))
-#     except Exception as e:
-#         print(e)
-#
-#
-# def array_merge(first_array, second_array):
-#     if isinstance(first_array, list) and isinstance(second_array, list):
-#         return first_array + second_array
-#     elif isinstance(first_array, dict) and isinstance(second_array, dict):
-#         return dict(list(first_array.items()) + list(second_array.items()))
-#     elif isinstance(first_array, set) and isinstance(second_array, set):
-#         return first_array.union(second_array)
-#     return False
-#
-# #### If this file doesn't exist, create it
-# if 'tasks.txt' not in os.listdir('.'):
-#     with open('tasks.txt','w') as f:
-#         f.write('')
-#
-#
-# def gettasklist():
-#     with open('tasks.txt','r') as f:
-#         tasklist = f.readlines()
-#     return tasklist
-#
-# def createnewtasklist():
-#     os.remove('tasks.txt')
-#     with open('tasks.txt','w') as f:
-#         f.write('')
-#
-# def updatetasklist(tasklist):
-#     os.remove('tasks.txt')
-#     with open('tasks.txt','w') as f:
-#         f.writelines(tasklist)
-#
-#
-#
-'''
-@app.route('/')
+@app.route('/todo', methods= ['GET', 'POST'])
 def todo():
-    return render_template('todo.html', datetoday2=datetoday2, tasklist=gettasklist(), l=len(gettasklist()))
-
-
-
-@app.route('/clear')
-def clear_list():
-    createnewtasklist()
-    return render_template('todo.html', datetoday2=datetoday2, tasklist=gettasklist(), l=len(gettasklist()))
-'''
-#
-
-# @app.route('/addtask', methods=['POST'])
-# def add_task():
-#     task = request.form.get('newtask')
-#     with open('tasks.txt', 'a') as f:
-#         f.writelines(task + '\n')
-#     return render_template('todo.html', datetoday2=datetoday2, tasklist=gettasklist(), l=len(gettasklist()))
-#
-#
-#
-# @app.route('/deltask', methods=['GET'])
-# def remove_task():
-#     task_index = int(request.args.get('deltaskid'))
-#     tasklist = gettasklist()
-#     print(task_index)
-#     print(tasklist)
-#     if task_index < 0 or task_index > len(tasklist):
-#         return render_template('todo.html', datetoday2=datetoday2, tasklist=tasklist, l=len(tasklist),
-#                                mess='Invalid Index...')
-#     else:
-#         removed_task = tasklist.pop(task_index)
-#     updatetasklist(tasklist)
-#     return render_template('todo.html', datetoday2=datetoday2, tasklist=tasklist, l=len(tasklist))
+    t = Task.query.filter_by(user=current_user.serialno).all()
+    if (request.method == 'POST'):
+        task = request.form.get('newtask')
+        date_ = request.form.get('time')
+        post_s = request.form.get('serial')
+        clr = request.form.get('cl')
+        if clr!=None:
+            entries_to_delete = Task.query.filter_by(user=current_user.serialno).all()
+            for entry in entries_to_delete:
+                db.session.delete(entry)
+            db.session.commit()
+            return redirect('/todo')
+        if post_s!=None:
+            entry_to_delete = Task.query.filter_by(id=post_s).first()
+            db.session.delete(entry_to_delete)
+            db.session.commit()
+            return redirect('/todo')
+        if date_!=None and task!=None:
+            entry = Task(user=current_user.serialno, description=task, date=date_)
+            db.session.add(entry)
+            db.session.commit()
+            return redirect('/todo')
+    return render_template('todo.html', tasks=t)
 
 
 if __name__ == "__main__":
@@ -742,7 +664,7 @@ if __name__ == "__main__":
         app.add_url_rule('/profcontact.html','profcontact', profcontact)
         # app.add_url_rule('/premium.html', 'premium', premium)
         app.add_url_rule('/cart.html', 'cart', cart)
-        # app.add_url_rule('/todo.html', 'todo', todo)
+        app.add_url_rule('/todo.html', 'todo', todo)
 
 
     app.run(debug=True)
