@@ -55,7 +55,6 @@ class Admin_login(db.Model, UserMixin):
     def get_id(self):
         return str(self.serial)
 
-.
 class Admincontacts(db.Model, UserMixin):
     aserial = db.Column(db.Integer, primary_key=True)
     aname = db.Column(db.String(100), nullable=False)
@@ -142,9 +141,6 @@ class ApprovedMeeting(db.Model):
     image = db.Column(db.Text, nullable=False)
     price = db.Column(db.Float, nullable=False)
 
-class Task(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    description = db.Column(db.String(255), nullable=False)
 
 
 
@@ -704,25 +700,6 @@ def update():
     return render_template("update.html")
 
 
-@app.route("/new_jobs", methods = ['GET', 'POST'])
-def new_jobs():
-    try:
-        if(request.method=='POST'):
-            '''Add entry to the database'''
-            # Job_Code = request.form.get('Job_Code')
-            Job_Title = request.form.get('Job_Title')
-            Company_Name = request.form.get('Company_Name')
-            Requirement = request.form.get('Requirement')
-            Location = request.form.get('Location')
-            Deadline = request.form.get('Deadline')
-
-            entry = Jobs(Job_Title=Job_Title, Company_Name=Company_Name, Requirement=Requirement, Location=Location, Deadline=Deadline)
-            db.session.add(entry)
-            db.session.commit()
-        return render_template('new_jobs.html')
-    except:
-        return render_template('contact_error.html')
-    return render_template("new_jobs.html")
 
 
 @app.route('/posts',methods=['POST','GET'])
