@@ -7,7 +7,12 @@ from flask_login import UserMixin, login_user, LoginManager, login_required, log
 from flask import flash, session, render_template, request, redirect, url_for
 import os
 from datetime import date
+<<<<<<< Updated upstream
 course_taken = None
+=======
+#import mysql.connector
+
+>>>>>>> Stashed changes
 datetoday = date.today().strftime("%m_%d_%y")
 datetoday2 = date.today().strftime("%d-%B-%Y")
 
@@ -95,6 +100,7 @@ class Prof_post(db.Model):
 
 
 class Cart(db.Model):
+<<<<<<< Updated upstream
     id= db.Column(db.Integer, primary_key=True)
     course_name= db.Column(db.String(250),nullable=False)
     course_code = db.Column(db.String(250), nullable=False)
@@ -128,6 +134,25 @@ class ApprovedMeeting(db.Model):
     nm = db.Column(db.String(255), nullable=False)
     reason = db.Column(db.Text, nullable=False)
     appointment = db.Column(db.String(255), nullable=False)
+=======
+    id = db.Column(db.Integer, primary_key=True)
+    course_name = db.Column(db.String(255), nullable=False)
+    course_code = db.Column(db.String(255), nullable=False)
+    image = db.Column(db.Text, nullable=False)
+    price = db.Column(db.Float, nullable=False)
+
+class Task(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    description = db.Column(db.String(255), nullable=False)
+
+
+
+
+
+
+
+
+>>>>>>> Stashed changes
 
 import enum
 class WishlistStatus(enum.Enum):
@@ -346,7 +371,6 @@ def professor_list():
     return render_template('professor_list.html', result = r)
 
 
-
 @app.route("/contact", methods = ['GET', 'POST']) #need to add more parameters for student sign up
 def contact():
     try:
@@ -475,7 +499,7 @@ def profile():
 
 @app.route("/payment", methods=['GET', 'POST'])
 def payment():
-    error = None;
+    error = None
     if (request.method == 'POST'):
         num = request.form.get('num')
         my = request.form.get('my')
@@ -592,6 +616,7 @@ def logout():
     return redirect(url_for('home'))
 
 
+<<<<<<< Updated upstream
 # @app.route('/premium')
 # def premium():
 #     courses = Premium.query.all()
@@ -671,6 +696,105 @@ def logout():
 #     finally:
 #         cursor.close()
 #         conn.close()
+=======
+@app.route('/premium')
+def premium():
+    courses = Premium.query.all()
+    total_courses_in_cart = sum(1 for course in courses if course.cart == CartStatus.yes)
+    return render_template('premium.html', courses=courses, total_courses_in_cart=total_courses_in_cart)
+
+
+@app.route('/add_course', methods=['POST'])
+def add_course():
+    course_name = request.form['course_name']
+    wishlist_status = request.form.get('wishlist', 'no')
+    cart_status = request.form.get('cart', 'no')
+
+    wishlist_status = WishlistStatus.yes if wishlist_status == 'yes' else WishlistStatus.no
+    cart_status = CartStatus.yes if cart_status == 'yes' else CartStatus.no
+
+    course = Premium(c_name=course_name, wishlist=wishlist_status, cart=cart_status)
+    db.session.add(course)
+    db.session.commit()
+
+    return "Juha edited successfully."
+
+'''@app.route('/cart')
+def cart():
+    try:
+        products = Cart.query.all()
+        return render_template('cart.html', products=products)
+    except Exception as e:
+        print(e)'''
+
+
+
+@app.route('/add', methods=['POST'])
+def add_product_to_cart():
+    cursor = None
+    conn = None  # Initialize conn outside the try block
+
+    try:
+        _quantity = int(request.form['quantity'])
+        _code = request.form['code']
+
+        # Validate the received values
+        if _quantity and _code and request.method == 'POST':
+            conn = db.connect()
+            cursor = conn.cursor(pymysql.cursors.DictCursor)
+            cursor.execute("SELECT * FROM cart WHERE code=%s", _code)
+            row = cursor.fetchone()
+
+            itemArray = {
+                row['code']: {
+                    'course_name': row['course_name'],
+                    'course_code': row['coursecode'],
+                    'quantity': _quantity,
+                    'price': row['price'],
+                    'image': row['image'],
+                    'total_price': _quantity * row['price']
+                }
+            }
+
+            all_total_price = 0
+            all_total_quantity = 0
+
+            session.modified = True
+            if 'cart_item' in session:
+                if row['course_code'] in session['cart_item']:
+                    for key, value in session['cart_item'].items():
+                        if row['course_code'] == key:
+                            old_quantity = session['cart_item'][key]['quantity']
+                            total_quantity = old_quantity + _quantity
+                            session['cart_item'][key]['quantity'] = total_quantity
+                            session['cart_item'][key]['total_price'] = total_quantity * row['price']
+                else:
+                    session['cart_item'] = array_merge(session['cart_item'], itemArray)
+
+                for key, value in session['cart_item'].items():
+                    individual_quantity = int(session['cart_item'][key]['quantity'])
+                    individual_price = float(session['cart_item'][key]['total_price'])
+                    all_total_quantity += individual_quantity
+                    all_total_price += individual_price
+            else:
+                session['cart_item'] = itemArray
+                all_total_quantity += _quantity
+                all_total_price += _quantity * row['price']
+
+            session['all_total_quantity'] = all_total_quantity
+            session['all_total_price'] = all_total_price
+
+            return redirect(url_for('.cart'))
+        else:
+            return 'Error while adding item to cart'
+    except Exception as e:
+        print(e)
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+>>>>>>> Stashed changes
 
 
 @app.route('/cart')
@@ -680,7 +804,86 @@ def cart():
         return render_template('cart.html', carts=rows)
 
 
+<<<<<<< Updated upstream
 @app.route('/todo', methods= ['GET', 'POST'])
+=======
+@app.route('/empty')
+def empty_cart():
+    try:
+        session.clear()
+        return redirect(url_for('.cart'))
+    except Exception as e:
+        print(e)
+
+
+@app.route('/delete/<string:code>')
+def delete_product(code):
+    try:
+        all_total_price = 0
+        all_total_quantity = 0
+        session.modified = True
+
+        for item in session['cart_item'].items():
+            if item[0] == code:
+                session['cart_item'].pop(item[0], None)
+                if 'cart_item' in session:
+                    for key, value in session['cart_item'].items():
+                        individual_quantity = int(session['cart_item'][key]['quantity'])
+                        individual_price = float(session['cart_item'][key]['total_price'])
+                        all_total_quantity = all_total_quantity + individual_quantity
+                        all_total_price = all_total_price + individual_price
+                break
+
+        if all_total_quantity == 0:
+            session.clear()
+        else:
+            session['all_total_quantity'] = all_total_quantity
+            session['all_total_price'] = all_total_price
+
+        # return redirect('/')
+        return redirect(url_for('.cart'))
+    except Exception as e:
+        print(e)
+
+
+def array_merge(first_array, second_array):
+    if isinstance(first_array, list) and isinstance(second_array, list):
+        return first_array + second_array
+    elif isinstance(first_array, dict) and isinstance(second_array, dict):
+        return dict(list(first_array.items()) + list(second_array.items()))
+    elif isinstance(first_array, set) and isinstance(second_array, set):
+        return first_array.union(second_array)
+    return False
+
+
+
+
+
+#### If this file doesn't exist, create it
+if 'tasks.txt' not in os.listdir('.'):
+    with open('tasks.txt','w') as f:
+        f.write('')
+
+
+def gettasklist():
+    with open('tasks.txt','r') as f:
+        tasklist = f.readlines()
+    return tasklist
+
+def createnewtasklist():
+    os.remove('tasks.txt')
+    with open('tasks.txt','w') as f:
+        f.write('')
+
+def updatetasklist(tasklist):
+    os.remove('tasks.txt')
+    with open('tasks.txt','w') as f:
+        f.writelines(tasklist)
+
+
+
+@app.route('/todo')
+>>>>>>> Stashed changes
 def todo():
     t = Task.query.filter_by(user=current_user.serialno).all()
     if (request.method == 'POST'):

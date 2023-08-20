@@ -1,3 +1,6 @@
+<<<<<<< Updated upstream
 Completing Report Writing
 Testing is working
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
