@@ -32,8 +32,6 @@ class Contacts(db.Model, UserMixin):
     password = db.Column(db.String(12), nullable=False)
     basic_mode = db.Column(db.Boolean, nullable=False, default=True)
     image = db.Column(db.String(80), nullable=False)
-
-
     def get_id(self):
         return str(self.serialno)
 
@@ -47,6 +45,15 @@ class Profcontacts(db.Model, UserMixin):
 
     def get_id(self):
         return str(self.serial)
+
+class Admin_login(db.Model, UserMixin):
+    aserial = db.Column(db.Integer, primary_key=True)
+    aname = db.Column(db.String(100), nullable=False)
+    aemail = db.Column(db.String(120), unique=True, nullable=False)
+    apassword = db.Column(db.String(100), nullable=False)
+    def get_id(self):
+        return str(self.serial)
+
 
 class Jobs(db.Model):
     Job_Code = db.Column(db.Integer, primary_key=True)
@@ -138,6 +145,12 @@ def load_user(id):
 @app.route("/index")
 def home():
     return render_template('index.html')
+
+
+@app.route("/courses_show", methods=['GET', 'POST'])
+def Courses_show():
+    r = Cart.query.filter().all()
+    return render_template('courses_show.html', items=r)
 
 
 @app.route("/courses", methods=['GET', 'POST'])
@@ -496,6 +509,30 @@ def loginP():
     return render_template('loginP.html')
 
 
+@app.route("/admin_login", methods= ['GET', 'POST'])
+def admin_login():
+    if(request.method== 'POST'):
+        mail_in= request.form.get('mail')
+        passw_in= request.form.get('password')
+        res = Admin_login.query.filter(Admin_login.amail==mail_in).all()
+        print(mail_in,passw_in,res[0].mail)
+        if len(res) == 0:
+            return 'error'  #need to add flash on top
+        elif res[0].mail==aemail_in and res[0].apassword==passw_in:
+            login_user(res[0])
+            return redirect(url_for('userP'))
+        elif res[0].aemail==mail_in and res[0].apassword!=passw_in:
+            return 'password error' #need to add flash on top
+
+    return render_template('admin_home.html')
+
+
+
+@app.route('/admin_login', methods=['GET', 'POST'])
+@login_required
+def dashboard3():
+    return render_template('admin_home.html')
+
 @app.route('/userP', methods=['GET', 'POST'])
 @login_required
 def dashboard2():
@@ -533,87 +570,6 @@ def logout():
     return redirect(url_for('home'))
 
 
-# @app.route('/premium')
-# def premium():
-#     courses = Premium.query.all()
-#     total_courses_in_cart = sum(1 for course in courses if course.cart == CartStatus.yes)
-#     return render_template('premium.html', courses=courses, total_courses_in_cart=total_courses_in_cart)
-#
-#
-# @app.route('/add_course', methods=['POST'])
-# def add_course():
-#     course_name = request.form['course_name']
-#     wishlist_status = request.form.get('wishlist', 'no')
-#     cart_status = request.form.get('cart', 'no')
-#
-#     wishlist_status = WishlistStatus.yes if wishlist_status == 'yes' else WishlistStatus.no
-#     cart_status = CartStatus.yes if cart_status == 'yes' else CartStatus.no
-#
-#     course = Premium(c_name=course_name, wishlist=wishlist_status, cart=cart_status)
-#     db.session.add(course)
-#     db.session.commit()
-#
-#     return "Juha edited successfully."
-#
-#
-# @app.route('/add', methods=['POST'])
-# def add_product_to_cart():
-#     cursor = None
-#     try:
-#         _quantity = int(request.form['quantity'])
-#         _code = request.form['code']
-#         # validate the received values
-#         if _quantity and _code and request.method == 'POST':
-#             conn = db.connect()
-#             cursor = conn.cursor(pymysql.cursors.DictCursor)
-#             cursor.execute("SELECT * FROM cart WHERE code=%s", _code)
-#             row = cursor.fetchone()
-#
-#             itemArray = {row['code']: {'course_name': row['course_name'], 'course_code': row['coursecode'],
-#                                        'quantity': _quantity, 'price': row['price'], 'image': row['image'],
-#                                        'total_price': _quantity * row['price']}}
-#
-#             all_total_price = 0
-#             all_total_quantity = 0
-#
-#             session.modified = True
-#             if 'cart_item' in session:
-#                 if row['course_code'] in session['cart_item']:
-#                     for key, value in session['cart_item'].items():
-#                         if row['course_code'] == key:
-#                             # session.modified = True
-#                             # if session['cart_item'][key]['quantity'] is not None:
-#                             #    session['cart_item'][key]['quantity'] = 0
-#                             old_quantity = session['cart_item'][key]['quantity']
-#                             total_quantity = old_quantity + _quantity
-#                             session['cart_item'][key]['quantity'] = total_quantity
-#                             session['cart_item'][key]['total_price'] = total_quantity * row['price']
-#                 else:
-#                     session['cart_item'] = array_merge(session['cart_item'], itemArray)
-#
-#                 for key, value in session['cart_item'].items():
-#                     individual_quantity = int(session['cart_item'][key]['quantity'])
-#                     individual_price = float(session['cart_item'][key]['total_price'])
-#                     all_total_quantity = all_total_quantity + individual_quantity
-#                     all_total_price = all_total_price + individual_price
-#             else:
-#                 session['cart_item'] = itemArray
-#                 all_total_quantity = all_total_quantity + _quantity
-#                 all_total_price = all_total_price + _quantity * row['price']
-#
-#             session['all_total_quantity'] = all_total_quantity
-#             session['all_total_price'] = all_total_price
-#
-#             return redirect(url_for('.cart'))
-#         else:
-#             return 'Error while adding item to cart'
-#     except Exception as e:
-#         print(e)
-#     finally:
-#         cursor.close()
-#         conn.close()
-
-
 @app.route('/cart')
 def cart():
         rows = Cart.query.filter().all()
@@ -646,6 +602,33 @@ def todo():
             db.session.commit()
             return redirect('/todo')
     return render_template('todo.html', tasks=t)
+
+
+
+@app.route('/jobs_admin')
+def jobs_admin():
+    res = Jobs.query.filter().all()
+    return render_template('jobs_admin.html', result=res)
+
+
+@app.route('/new_jobs', methods= ['GET', 'POST'])
+def new_jobs():
+        res = Jobs.query.filter().all()
+        if(request.method=='POST'):
+            name = request.form.get('Job_Title')
+            c = request.form.get('Company_Name')
+            r = request.form.get('Requirement')
+            l = request.form.get('Location')
+            print(name,c,r,l)
+
+            entry = Jobs(Job_Title=name,Company_Name =c , Requirement=r, Location=l )
+            db.session.add(entry)
+            db.session.commit()
+            return render_template('jobs_admin.html', result=res)
+        return render_template('new_jobs.html')
+
+
+
 
 
 if __name__ == "__main__":
