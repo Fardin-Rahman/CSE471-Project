@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,7 +14,7 @@
 <title>Scholar Sync</title>
 <meta name="keywords" content="">
 <meta name="description" content="">
-<meta name="author" content="">	
+<meta name="author" content=""> 
 <!-- bootstrap css -->
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename= 'css/bootstrap.min.css') }}">
 <!-- style css -->
@@ -29,97 +31,45 @@
 <link rel="stylesheet" href="{{ url_for('static', filename= 'css/owl.carousel.min.css') }}">
 <link rel="stylesoeet" href="{{ url_for('static', filename= 'css/owl.theme.default.min.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename= 'https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.css') }}" media="screen">
-    <style>
 
-        .dropdown {
-
-          position: relative;
-          display: inline-block;
-        }
-
-        .dropdown-content {
-          display: none;
-          position: absolute;
-          background-color: #f1f1f1;
-          min-width: 160px;
-          box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-          z-index: 1;
-        }
-
-        .dropdown-content a {
-          color: black;
-          padding: 12px 16px;
-          text-decoration: none;
-          display: block;
-        }
-
-        .dropdown-content a:hover {background-color: #ddd;}
-
-        .dropdown:hover .dropdown-content {display: block;}
-
-        .dropdown:hover .dropbtn {background-color: #3e8e41;}
-        </style>
 </head>
-
-
 <body>
-	<!-- header section start-->
-	<nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="logo" href="#"><img src="           {{ url_for('static', filename= 'images/sslogo.png') }}   "></a>
+  <!-- header section start-->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="logo" href="index.html" style="margin-right: auto;"><img src="{{ url_for('static', filename= 'images/logo.png') }}" style="width: 100px;"></a>
+
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
+            <span class="navbar-toggler-icon"></span>
         </button>
+
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
                 <li class="nav-item">
-                   <a class="nav-link" href="user.html">HOME</a>
+                   <a class="nav-link" href="admin_dashboard.html">HOME</a>
                 </li>
                 <li class="nav-item">
-                   <a class="nav-link" href="/jobs_user">JOBS</a>
+                   <a class="nav-link" href="/jobs_admin">JOBS</a>
                 </li>
                 <li class="nav-item">
-                   <a class="nav-link" href="/professor_list_user">FACULTIES</a>
+                   <a class="nav-link" href="/professor_list_admin">FACULTIES</a>
                 </li>
                 <li class="nav-item">
-                   <a class="nav-link" href="/prof_post_offer">RESEARCHs</a>
+                   <a class="nav-link" href="/payment_admin">PAYMENT</a>
                 </li>
                 <li class="nav-item">
-                   <a class="nav-link" href="/scholarship_user">SCHOLARSHIP</a>
+                   <a class="nav-link" href="/scholarship_admin">SCHOLARSHIP</a>
                 </li>
                 <li class="nav-item">
-                   <a class="nav-link" href="/discussion">DISCUSSION</a>
+                   <a class="nav-link" href="/discussion_admin">DISCUSSION</a>
                 </li>
-
-               <div class="dropdown">
-                    <button class="nav-link">PROFILE ↓</button>
-                    <div class="dropdown-content">
-                        <a href="/profile">PROFILE DASHBOARDS</a>
-                        <a href="/update">EDIT PROFILE</a>
-                    </div>
-                </div>
 
                 <li class="nav-item">
-                   <a class="nav-link" href="/courses">COURSES</a>
+                   <a class="nav-link" href="/profile_admin">ADMIN</a>
                 </li>
 
-                 <div class="dropdown">
-                    <button class="nav-link">Appoinments ↓</button>
-                    <div class="dropdown-content">
-                        <a href="/approved_appointments">Approved Appointments</a>
-                        <a href="/posts">Request Appoinments</a>
-                    </div>
-                </div>
-
-
-
-                <div class="dropdown">
-                    <button class="nav-link">OTHERs ↓</button>
-                    <div class="dropdown-content">
-                        <a href="/enroll_courses">ENROLLED COURSES</a>
-                        <a href="todo.html">TO-DO</a>
-                        <a href="/wishlist">WISHLIST</a>
-                    </div>
-                </div>
+                <li class="nav-item">
+                   <a class="nav-link" href="/todo.html">MEMBERS</a>
+                </li>
 
                 <li class="nav-item">
                    <a class="nav-link" href="/logout">Log out</a>

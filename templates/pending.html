@@ -1,0 +1,28 @@
+{% extends "userPlayout.html" %}
+{% block body %}
+<!-- Page Header -->
+      <!--header class="masthead" style="background-image: url('{{ url_for('static', filename='img/contact-bg.jpg') }}')"-->
+    <div class="services_section">
+        <div class="container">
+            <h1 class="services_text">APPOINTMENT PENDING LIST:</h1>
+        </div>
+    </div>
+
+{% for pending in pendings %}
+<div class="shadow p-3 mb-5 bg-body rounded appointment-card">
+    <h2><strong>PENDING REQUEST </strong></h2>
+    <div class="appointment-details">
+        <p><strong>NAME:</strong> {{ pending.nm }}</p>
+        <p><strong>REASON FOR APPOINTMENT:</strong> {{ pending.reason }}</p>
+        <p><strong>TIME AND DATE FOR APPOINTMENT:</strong> {{ pending.appointment }}</p>
+    </div>
+    <div class="delete-button">
+        <a href="{{ url_for('approve', id=pending.id) }}" class="btn btn-success btn-sm">APPROVE</a>
+        <a href="{{ url_for('delete', id=pending.id) }}" class="btn btn-danger btn-sm">DELETE APPOINTMENT</a>
+    </div>
+</div>
+
+
+
+{% endfor %}
+{% endblock %}

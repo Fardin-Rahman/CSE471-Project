@@ -1,0 +1,74 @@
+{% extends "layout_admin.html" %}
+{% block body %}
+
+	<!-- header section start-->
+	<!-- banner section start-->
+	<div class="banner_section layout_padding">
+		<div class="container">
+			<h1 class="best_taital">The Best Grooming Tool for Graduates</h1>
+			<div class="box_main">
+			    <input type="" class="email_bt" placeholder="Search Job" name="">
+				<button class="subscribe_bt"><a href="#">Search</a></button>
+		    </div>
+		    <p class="there_text">Your perfect stop for countless courses and renown instructors from all around the world! Sign up today to unveil the most exciting offers and opportunities!</p>
+		    <div class="bt_main">
+		    	<div class="discover_bt"><a href="contact.html">Sign up Today</a></div>
+		    </div>
+		</div>
+	</div>
+	<!-- banner section end-->
+	<!-- marketing section start-->
+	<div class="marketing_section layout_padding">
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-md-6">
+					<div class="job_section">
+					    <h1 class="jobs_text">About Us</h1>
+					    <p class="dummy_text">Are you a graduate student looking for the perfect roadmap to shape your future? Look no further! Our website is your comprehensive resource, designed specifically to help you navigate through the intricacies of your academic and professional journey. We understand the challenges and uncertainties that come with being a grad student ...</p>
+					    <div class="apply_bt"><a href="aboutus.html">Read More</a></div>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="image_1 padding_0"><img src="     {{ url_for('static', filename= 'images/img-1.png') }}         "></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- marketing section end-->
+	<!-- Industrial section start-->
+	<div class="marketing_section layout_padding">
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-md-6">
+					<div class="image_1 padding_0"><img src="https://minciter.com/wp-content/uploads/2021/11/Job-.jpeg"></div>
+				</div>
+				<div class="col-md-6">
+					<div class="job_section_2">
+					    <h1 class="jobs_text">Find Jobs</h1>
+					    <p class="dummy_text">Whether you're seeking internships, part-time positions, or full-time employment, our Find Job tab offers a comprehensive database of job opportunities tailored to your field of study. Our team works diligently to gather and update job listings regularly, ensuring that you stay informed about the latest openings in your area of interest.</p>
+					    <div class="apply_bt"><a href="jobs.html">Seek Jobs</a></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Industrial section end-->
+	<!-- Corporate section start-->
+	<div class="marketing_section layout_padding">
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-md-6">
+					<div class="job_section">
+					    <h1 class="jobs_text">Scholarships</h1>
+					    <p class="dummy_text">Our dedicated team curates a comprehensive database of scholarships that are relevant to various fields of study, ensuring that you have a diverse range of funding options to explore. Whether you're looking for merit-based scholarships, need-based grants, or specialized funding for research projects, our Scholarship tab is a valuable resource for finding financial support.</p>
+					    <div class="apply_bt"><a href="scholarship.html">Visit Here</a></div>
+					</div>
+				</div>
+				<div class="col-md-6 padding_0">
+					<div class="image_1"><img src="https://www.coastline.edu/_files/img/750-421/scholarship-money-grad-cap.jpg"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	{% endblock %}

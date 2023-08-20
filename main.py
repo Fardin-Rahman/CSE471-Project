@@ -48,6 +48,15 @@ class Profcontacts(db.Model, UserMixin):
     def get_id(self):
         return str(self.serial)
 
+class Admincontacts(db.Model, UserMixin):
+    aserial = db.Column(db.Integer, primary_key=True)
+    aname = db.Column(db.String(100), nullable=False)
+    aemail = db.Column(db.String(30), unique= True, nullable=False)
+    apassword = db.Column(db.String(30), nullable=False)
+
+    def get_id(self):
+        return str(self.aserial)
+
 class Jobs(db.Model):
     Job_Code = db.Column(db.Integer, primary_key=True)
     Job_Title = db.Column(db.String(50), nullable=True)
@@ -109,6 +118,17 @@ class Task(db.Model):
     description = db.Column(db.String(255), nullable=False)
     date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
+class Post(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    nm = db.Column(db.String(255), nullable=False)
+    reason = db.Column(db.Text, nullable=False)
+    appointment = db.Column(db.String(255), nullable=False)
+class ApprovedMeeting(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    nm = db.Column(db.String(255), nullable=False)
+    reason = db.Column(db.Text, nullable=False)
+    appointment = db.Column(db.String(255), nullable=False)
+
 import enum
 class WishlistStatus(enum.Enum):
     no = 'no'
@@ -133,6 +153,7 @@ class Premium(db.Model):
 def load_user(id):
     if Profcontacts.query.get(int(id)): return Profcontacts.query.get(int(id))
     elif Contacts.query.get(int(id)): return Contacts.query.get(int(id))
+    elif Admincontacts.query.get(int(id)): return Admincontacts.query.get(int(id))
 
 @app.route("/")
 @app.route("/index")
@@ -359,6 +380,44 @@ def profcontact():
     except:
         return render_template('contact_error.html')
 
+@app.route("/admincontacts", methods = ['GET', 'POST']) #need to add more parameters for student sign up
+def admincontacts():
+    try:
+        if(request.method=='POST'):
+            '''Add entry to the database'''
+            aname= request.form.get('aname')
+            aemail=request.form.get("aemail")
+            apassword = request.form.get('apassword')
+
+            entry3 = admincontacts(aname=aname,aemail = aemail, apassword=apassword)
+            db.session.add(entry3)
+            db.session.commit()
+        return render_template('admincontacts.html')
+    except:
+        return render_template('contact_error.html')
+
+@app.route("/logina", methods= ['GET', 'POST'])
+def logina():
+    if(request.method== 'POST'):
+        aemail_in= request.form.get('aemail')
+        apassword_in= request.form.get('apassword')
+        res = Admincontacts.query.filter(Admincontacts.aemail==aemail_in).all()
+        if len(res) == 0:
+            flash('Please fill all the field', 'danger')
+                  #need to add flash on top
+        elif res[0].aemail==aemail_in and res[0].apassword==apassword_in:
+            login_user(res[0])
+            return redirect(url_for('admin_dashboard'))
+        elif res[0].aemail==aemail_in and res[0].apassword!=apassword_in:
+            flash('password error') #need to add flash on top
+
+
+
+    return render_template('logina.html')
+
+@app.route("/admin_dashboard")
+def admin_dashboard():
+    return render_template('admin_dashboard.html')
 
 @app.route("/user")
 def user():
@@ -647,6 +706,119 @@ def todo():
             return redirect('/todo')
     return render_template('todo.html', tasks=t)
 
+@app.route('/update',methods=['POST','GET'])
+def update():
+    if(request.method=='POST'):
+        name = request.form['name']
+        email = request.form['email']
+        password = request.form['password']
+        print(name)
+        if name!='':
+            current_user.name=name
+        if email!='':
+            current_user.email=email
+        if password!='':
+            current_user.password=password
+        db.session.commit()
+
+        flash("updated")
+        return render_template("update.html")
+    return render_template("update.html")
+
+
+@app.route("/new_jobs", methods = ['GET', 'POST'])
+def new_jobs():
+    try:
+        if(request.method=='POST'):
+            '''Add entry to the database'''
+            # Job_Code = request.form.get('Job_Code')
+            Job_Title = request.form.get('Job_Title')
+            Company_Name = request.form.get('Company_Name')
+            Requirement = request.form.get('Requirement')
+            Location = request.form.get('Location')
+            Deadline = request.form.get('Deadline')
+
+            entry = Jobs(Job_Title=Job_Title, Company_Name=Company_Name, Requirement=Requirement, Location=Location, Deadline=Deadline)
+            db.session.add(entry)
+            db.session.commit()
+        return render_template('new_jobs.html')
+    except:
+        return render_template('contact_error.html')
+    return render_template("new_jobs.html")
+
+
+@app.route('/posts',methods=['POST','GET'])
+def posts():
+    if(request.method=='POST'):
+        nm = request.form.get('nm')
+        reason = request.form.get('reason')
+        appointment = request.form.get('appointment')
+
+        entry1 = Post(nm=nm,reason= reason, appointment=appointment )
+        db.session.add(entry1)
+        db.session.commit()
+        flash("Sent appointment to professor")
+        return render_template('posts.html')
+
+    flash("Sorry couldn't Sent appointment to professor")
+    return render_template('posts.html')
+
+@app.route('/Post/delete/<int:id>', methods=('GET', 'POST'))
+def delete(id):
+    post_to_delete= Post.query.get_or_404(id)
+    try:
+        db.session.delete(post_to_delete)
+        db.session.commit()
+        flash("Appointment removed")
+        pendings = Post.query.order_by(Post.nm)
+
+        return render_template('pending.html', pendings=pendings)
+    except:
+        flash("try again")
+        pendings = Post.query.order_by(Post.nm)
+
+        return render_template('pending.html', pendings=pendings)
+
+@app.route('/pending')
+def pending():
+    pendings= Post.query.order_by(Post.nm)
+
+    return render_template('pending.html', pendings=pendings)
+
+@app.route('/approve/<int:id>', methods=['GET', 'POST'])
+def approve(id):
+    appointment = Post.query.get_or_404(id)
+
+
+    approved_meeting = ApprovedMeeting(nm=appointment.nm, reason=appointment.reason, appointment=appointment.appointment)
+
+    try:
+        #approve click er por ja ache ta aproved_meeting database e commit and upcoming_meetings e show korbe as well as pending theke delete hoye jabe.
+        db.session.add(approved_meeting)
+        db.session.commit()
+
+
+        db.session.delete(appointment)
+        db.session.commit()
+
+        flash("Appointment approved and moved to Upcoming Meetings")
+    except:
+        flash("An error occurred while approving the appointment")
+
+    return redirect(url_for('upcoming_meetings'))
+
+@app.route('/upcoming_meetings', methods=['GET'])
+def upcoming_meetings():
+    approved_meetings = ApprovedMeeting.query.all()
+
+    return render_template('upcoming_meetings.html', approved_meetings=approved_meetings)
+
+@app.route('/approved_appointments', methods=['GET'])
+def Approved_appointments():
+    approved_meetings = ApprovedMeeting.query.all()
+
+    return render_template('Approved_appointments.html', approved_meetings=approved_meetings)
+
 
 if __name__ == "__main__":
     with app.test_request_context():
@@ -665,6 +837,22 @@ if __name__ == "__main__":
         # app.add_url_rule('/premium.html', 'premium', premium)
         app.add_url_rule('/cart.html', 'cart', cart)
         app.add_url_rule('/todo.html', 'todo', todo)
+        app.add_url_rule('/update.html', 'update', update)
+        app.add_url_rule('/new_jobs.html', 'new_jobs', new_jobs)
+        app.add_url_rule('/admincontacts.html', 'admincontacts', admincontacts)
+        app.add_url_rule('/admin_dashboard.html', 'admin_dashboard', admin_dashboard)
+
+
+        app.add_url_rule('/pending.html', 'pending', pending)
+        app.add_url_rule('/posts.html', 'posts', posts)
+        app.add_url_rule('/upcoming_meetings.html', 'upcoming_meetings', upcoming_meetings)
+        app.add_url_rule('/Approved_appointments.html', 'Approved_appointments', Approved_appointments)
+
+
+
+
+
+
 
 
     app.run(debug=True)

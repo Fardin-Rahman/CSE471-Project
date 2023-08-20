@@ -1,0 +1,54 @@
+{% extends "userlayout.html" %}
+{% block body %}
+
+    <!-- Page Header -->
+      <!--header class="masthead" style="background-image: url('{{ url_for('static', filename='img/contact-bg.jpg') }}')"-->
+    <div class="services_section">
+        <div class="container">
+            <h1 class="services_text">Book Your Appointment</h1>
+        </div>
+    </div>
+
+
+    <!-- Main Content -->
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-8 col-md-10 mx-auto">
+            <h1 style="width: 100%"> {{current_user.name}} Submit Your Appointment Here:</h1>
+          <!-- Contact Form - Enter your email address on line 19 of the mail/contact_me.php file to make this form work. -->
+          <!-- WARNING: Some web hosts do not allow emails to be sent through forms to common mail hosts like Gmail or Yahoo. It's recommended that you use a private domain email address! -->
+          <!-- To use the contact form, your site must be on a live web host with PHP! The form will not work locally! -->
+          <form name="sentMessage" id="contactForm" action = "/posts" method="post" novalidate>
+            <div class="control-group">
+              <div class="form-group floating-label-form-group controls">
+                <label>Name</label>
+                <input type="nm"  class="form-control" placeholder="Name" id="nm" name='nm' required data-validation-required-message="Please enter your name.">
+                <p class="help-block text-danger"></p>
+              </div>
+            </div>
+            <div class="control-group">
+              <div class="form-group floating-label-form-group controls">
+                <label>Reason For Appointment</label>
+                <input type="reason"  class="form-control" placeholder="Reason" id="reason" name="reason" required data-validation-required-message="Please enter your reason for appointment here.">
+                <p class="help-block text-danger"></p>
+              </div>
+            </div>
+            <div class="control-group">
+              <div class="form-group floating-label-form-group controls">
+                <label>Appointment</label>
+                <input type="appointment"  class="form-control" placeholder="appointment" id="appointment" name="appointment" required data-validation-required-message="Please enter your appointment time and date here.">
+                <p class="help-block text-danger"></p>
+              </div>
+            </div>
+            <br>
+            <div id="success"></div>
+            <div class="form-group">
+              <button type="submit" class="btn btn-primary" id="sendAppointmentButton">Send Appointment</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+{% endblock %}
+

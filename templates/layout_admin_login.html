@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=0.5">
 <!-- basic -->
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -10,6 +11,9 @@
 <meta name="viewport" content="initial-scale=1, maximum-scale=1">
 <!-- site metas -->
 <title>Scholar Sync</title>
+        <link rel = "icon" href =
+"https://www.citypng.com/public/uploads/preview/yellow-search-icon-button-png-image-11640084015fk4pehouam.png"
+        type = "image/x-icon">
 <meta name="keywords" content="">
 <meta name="description" content="">
 <meta name="author" content="">	
@@ -29,9 +33,12 @@
 <link rel="stylesheet" href="{{ url_for('static', filename= 'css/owl.carousel.min.css') }}">
 <link rel="stylesoeet" href="{{ url_for('static', filename= 'css/owl.theme.default.min.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename= 'https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.css') }}" media="screen">
+
+
     <style>
 
         .dropdown {
+          border: 1px solid;
 
           position: relative;
           display: inline-block;
@@ -60,94 +67,33 @@
         .dropdown:hover .dropbtn {background-color: #3e8e41;}
         </style>
 </head>
-
-
 <body>
 	<!-- header section start-->
-	<nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="logo" href="#"><img src="           {{ url_for('static', filename= 'images/sslogo.png') }}   "></a>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <div class="logo-container" style="text-align: center; width: 100%;">
+        <a class="logo" href="index.html"><img src="{{ url_for('static', filename= 'images/logo.png') }}" style="width: 100px;"></a>
+      </div>
+
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
+            <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
-                <li class="nav-item">
-                   <a class="nav-link" href="user.html">HOME</a>
-                </li>
-                <li class="nav-item">
-                   <a class="nav-link" href="/jobs_user">JOBS</a>
-                </li>
-                <li class="nav-item">
-                   <a class="nav-link" href="/professor_list_user">FACULTIES</a>
-                </li>
-                <li class="nav-item">
-                   <a class="nav-link" href="/prof_post_offer">RESEARCHs</a>
-                </li>
-                <li class="nav-item">
-                   <a class="nav-link" href="/scholarship_user">SCHOLARSHIP</a>
-                </li>
-                <li class="nav-item">
-                   <a class="nav-link" href="/discussion">DISCUSSION</a>
-                </li>
 
-               <div class="dropdown">
-                    <button class="nav-link">PROFILE ↓</button>
-                    <div class="dropdown-content">
-                        <a href="/profile">PROFILE DASHBOARDS</a>
-                        <a href="/update">EDIT PROFILE</a>
-                    </div>
-                </div>
-
-                <li class="nav-item">
-                   <a class="nav-link" href="/courses">COURSES</a>
-                </li>
-
-                 <div class="dropdown">
-                    <button class="nav-link">Appoinments ↓</button>
-                    <div class="dropdown-content">
-                        <a href="/approved_appointments">Approved Appointments</a>
-                        <a href="/posts">Request Appoinments</a>
-                    </div>
-                </div>
-
-
-
-                <div class="dropdown">
-                    <button class="nav-link">OTHERs ↓</button>
-                    <div class="dropdown-content">
-                        <a href="/enroll_courses">ENROLLED COURSES</a>
-                        <a href="todo.html">TO-DO</a>
-                        <a href="/wishlist">WISHLIST</a>
-                    </div>
-                </div>
-
-                <li class="nav-item">
-                   <a class="nav-link" href="/logout">Log out</a>
-                </li>
             </ul>
         </div>
+
+
+
     </nav>
+    <style>
+      .logo-container {
+            display: flex;
+            justify-content: center;
+        }
+    </style>
 
 {% block body %} {% endblock %}
-
-
-<!-- copyright section start-->
-<div class="copyright_section">
-   <div class="container">
-      <div class="row">
-         <div class="col-md-6">
-            <p class="copyright_text">
-               Copyright 2023 All Rights Reserved By
-               <a href="https://html.design"> Group 10</a>
-            </p>
-         </div>
-         <div class="col-md-6">
-            <p class="cookies_text">Cookies, Privacy and Terms</p>
-         </div>
-      </div>
-   </div>
-</div>
-<!-- copyright section end-->
 
 
 
