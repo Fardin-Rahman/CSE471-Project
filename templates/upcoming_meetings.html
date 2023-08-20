@@ -1,0 +1,20 @@
+{% extends "userPlayout.html" %}
+{% block body %}
+<!-- Page Header for Upcoming Meetings -->
+<div class="services_section">
+    <div class="container">
+        <h1 class="services_text">UPCOMING MEETINGS:</h1>
+    </div>
+</div>
+
+
+{% for approved in approved_meetings %}
+<div class="shadow p-3 mb-5 bg-body rounded upcoming-meeting">
+    <h2><strong>UPCOMING MEETING NO {{ approved.id }}</strong></h2>
+    <p><strong>NAME:</strong> {{ approved.nm }}</p>
+    <p><strong>REASON FOR APPOINTMENT:</strong> {{ approved.reason }}</p>
+    <p><strong>TIME AND DATE FOR APPOINTMENT:</strong> {{ approved.appointment }}</p>
+</div>
+{% endfor %}
+
+{% endblock %}

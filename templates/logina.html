@@ -1,0 +1,71 @@
+{% extends "layout_admin_login.html" %}
+{% block body %}
+
+<!-- header section end-->
+<!-- login section start-->
+<div class="services_section">
+  <div class="container">
+    <img class="mb-4" src="{{ url_for('static', filename= 'images/alphabet-svgrepo-com.png') }}" alt="" width="72" height="72">
+    <h1 class="services_text"> Admin's Login DashBoard</h1>
+  </div>
+</div>
+<div class="login_section">
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
+        <div class="card card-signin my-5">
+          <div class="card-body">
+            <h5 class="card-title text-center">Log In</h5>
+            <form class="form-signin" action="/logina" method="post">
+              <div class="form-label-group">
+                <input type="text" id="inputAdminName" class="form-control" placeholder="Admin Name" name="aname" required>
+                <label for="inputAdminName">Admin Name</label>
+              </div>
+
+              <div class="form-label-group">
+                <input type="email" id="inputEmail" class="form-control" placeholder="Email address" name="aemail" required>
+                <label for="inputEmail">Email address</label>
+              </div>
+
+              <div class="form-label-group">
+                <input type="password" id="inputPassword" class="form-control" placeholder="Password" name="apassword" required>
+                <label for="inputPassword">Password</label>
+              </div>
+
+              <div class="custom-control custom-checkbox mb-3">
+                <input type="checkbox" class="custom-control-input" id="customCheck1">
+                <label class="custom-control-label" for="customCheck1">Remember password</label>
+              </div>
+              <button class="btn btn-lg btn-primary btn-block text-uppercase" type="submit">Log In</button>
+              <hr class="my-4">
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- login section end-->
+
+<!-- Javascript files-->
+<script src="js/jquery.min.js"></script>
+<script src="js/popper.min.js"></script>
+<script src="js/bootstrap.bundle.min.js"></script>
+<script src="js/jquery-3.0.0.min.js"></script>
+<script src="js/plugin.js"></script>
+<!-- sidebar -->
+<script src="js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="js/custom.js"></script>
+<!-- javascript -->
+<script src="js/owl.carousel.js"></script>
+<script src="https:cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.js"></script>
+<script>
+  $(document).ready(function () {
+    $(".fancybox").fancybox({
+      openEffect: "none",
+      closeEffect: "none",
+    });
+  });
+</script>
+
+{% endblock %}

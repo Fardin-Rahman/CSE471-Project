@@ -7,7 +7,12 @@ from flask_login import UserMixin, login_user, LoginManager, login_required, log
 from flask import flash, session, render_template, request, redirect, url_for
 import os
 from datetime import date
+<<<<<<< Updated upstream
 course_taken = None
+=======
+#import mysql.connector
+
+>>>>>>> Stashed changes
 datetoday = date.today().strftime("%m_%d_%y")
 datetoday2 = date.today().strftime("%d-%B-%Y")
 
@@ -46,6 +51,7 @@ class Profcontacts(db.Model, UserMixin):
     def get_id(self):
         return str(self.serial)
 
+<<<<<<< HEAD
 class Admin_login(db.Model, UserMixin):
     aserial = db.Column(db.Integer, primary_key=True)
     aname = db.Column(db.String(100), nullable=False)
@@ -54,6 +60,16 @@ class Admin_login(db.Model, UserMixin):
     def get_id(self):
         return str(self.serial)
 
+=======
+class Admincontacts(db.Model, UserMixin):
+    aserial = db.Column(db.Integer, primary_key=True)
+    aname = db.Column(db.String(100), nullable=False)
+    aemail = db.Column(db.String(30), unique= True, nullable=False)
+    apassword = db.Column(db.String(30), nullable=False)
+
+    def get_id(self):
+        return str(self.aserial)
+>>>>>>> 4491c0c1ebcd1f95f0c99d75ff08eb5e39a79302
 
 class Jobs(db.Model):
     Job_Code = db.Column(db.Integer, primary_key=True)
@@ -93,6 +109,7 @@ class Prof_post(db.Model):
 
 
 class Cart(db.Model):
+<<<<<<< Updated upstream
     id= db.Column(db.Integer, primary_key=True)
     course_name= db.Column(db.String(250),nullable=False)
     course_code = db.Column(db.String(250), nullable=False)
@@ -115,6 +132,36 @@ class Task(db.Model):
     user = db.Column(db.Integer, nullable=False)
     description = db.Column(db.String(255), nullable=False)
     date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+
+class Post(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    nm = db.Column(db.String(255), nullable=False)
+    reason = db.Column(db.Text, nullable=False)
+    appointment = db.Column(db.String(255), nullable=False)
+class ApprovedMeeting(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    nm = db.Column(db.String(255), nullable=False)
+    reason = db.Column(db.Text, nullable=False)
+    appointment = db.Column(db.String(255), nullable=False)
+=======
+    id = db.Column(db.Integer, primary_key=True)
+    course_name = db.Column(db.String(255), nullable=False)
+    course_code = db.Column(db.String(255), nullable=False)
+    image = db.Column(db.Text, nullable=False)
+    price = db.Column(db.Float, nullable=False)
+
+class Task(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    description = db.Column(db.String(255), nullable=False)
+
+
+
+
+
+
+
+
+>>>>>>> Stashed changes
 
 import enum
 class WishlistStatus(enum.Enum):
@@ -140,6 +187,7 @@ class Premium(db.Model):
 def load_user(id):
     if Profcontacts.query.get(int(id)): return Profcontacts.query.get(int(id))
     elif Contacts.query.get(int(id)): return Contacts.query.get(int(id))
+    elif Admincontacts.query.get(int(id)): return Admincontacts.query.get(int(id))
 
 @app.route("/")
 @app.route("/index")
@@ -338,7 +386,6 @@ def professor_list():
     return render_template('professor_list.html', result = r)
 
 
-
 @app.route("/contact", methods = ['GET', 'POST']) #need to add more parameters for student sign up
 def contact():
     try:
@@ -372,6 +419,44 @@ def profcontact():
     except:
         return render_template('contact_error.html')
 
+@app.route("/admincontacts", methods = ['GET', 'POST']) #need to add more parameters for student sign up
+def admincontacts():
+    try:
+        if(request.method=='POST'):
+            '''Add entry to the database'''
+            aname= request.form.get('aname')
+            aemail=request.form.get("aemail")
+            apassword = request.form.get('apassword')
+
+            entry3 = admincontacts(aname=aname,aemail = aemail, apassword=apassword)
+            db.session.add(entry3)
+            db.session.commit()
+        return render_template('admincontacts.html')
+    except:
+        return render_template('contact_error.html')
+
+@app.route("/logina", methods= ['GET', 'POST'])
+def logina():
+    if(request.method== 'POST'):
+        aemail_in= request.form.get('aemail')
+        apassword_in= request.form.get('apassword')
+        res = Admincontacts.query.filter(Admincontacts.aemail==aemail_in).all()
+        if len(res) == 0:
+            flash('Please fill all the field', 'danger')
+                  #need to add flash on top
+        elif res[0].aemail==aemail_in and res[0].apassword==apassword_in:
+            login_user(res[0])
+            return redirect(url_for('admin_dashboard'))
+        elif res[0].aemail==aemail_in and res[0].apassword!=apassword_in:
+            flash('password error') #need to add flash on top
+
+
+
+    return render_template('logina.html')
+
+@app.route("/admin_dashboard")
+def admin_dashboard():
+    return render_template('admin_dashboard.html')
 
 @app.route("/user")
 def user():
@@ -429,7 +514,7 @@ def profile():
 
 @app.route("/payment", methods=['GET', 'POST'])
 def payment():
-    error = None;
+    error = None
     if (request.method == 'POST'):
         num = request.form.get('num')
         my = request.form.get('my')
@@ -570,6 +655,190 @@ def logout():
     return redirect(url_for('home'))
 
 
+<<<<<<< HEAD
+=======
+<<<<<<< Updated upstream
+# @app.route('/premium')
+# def premium():
+#     courses = Premium.query.all()
+#     total_courses_in_cart = sum(1 for course in courses if course.cart == CartStatus.yes)
+#     return render_template('premium.html', courses=courses, total_courses_in_cart=total_courses_in_cart)
+#
+#
+# @app.route('/add_course', methods=['POST'])
+# def add_course():
+#     course_name = request.form['course_name']
+#     wishlist_status = request.form.get('wishlist', 'no')
+#     cart_status = request.form.get('cart', 'no')
+#
+#     wishlist_status = WishlistStatus.yes if wishlist_status == 'yes' else WishlistStatus.no
+#     cart_status = CartStatus.yes if cart_status == 'yes' else CartStatus.no
+#
+#     course = Premium(c_name=course_name, wishlist=wishlist_status, cart=cart_status)
+#     db.session.add(course)
+#     db.session.commit()
+#
+#     return "Juha edited successfully."
+#
+#
+# @app.route('/add', methods=['POST'])
+# def add_product_to_cart():
+#     cursor = None
+#     try:
+#         _quantity = int(request.form['quantity'])
+#         _code = request.form['code']
+#         # validate the received values
+#         if _quantity and _code and request.method == 'POST':
+#             conn = db.connect()
+#             cursor = conn.cursor(pymysql.cursors.DictCursor)
+#             cursor.execute("SELECT * FROM cart WHERE code=%s", _code)
+#             row = cursor.fetchone()
+#
+#             itemArray = {row['code']: {'course_name': row['course_name'], 'course_code': row['coursecode'],
+#                                        'quantity': _quantity, 'price': row['price'], 'image': row['image'],
+#                                        'total_price': _quantity * row['price']}}
+#
+#             all_total_price = 0
+#             all_total_quantity = 0
+#
+#             session.modified = True
+#             if 'cart_item' in session:
+#                 if row['course_code'] in session['cart_item']:
+#                     for key, value in session['cart_item'].items():
+#                         if row['course_code'] == key:
+#                             # session.modified = True
+#                             # if session['cart_item'][key]['quantity'] is not None:
+#                             #    session['cart_item'][key]['quantity'] = 0
+#                             old_quantity = session['cart_item'][key]['quantity']
+#                             total_quantity = old_quantity + _quantity
+#                             session['cart_item'][key]['quantity'] = total_quantity
+#                             session['cart_item'][key]['total_price'] = total_quantity * row['price']
+#                 else:
+#                     session['cart_item'] = array_merge(session['cart_item'], itemArray)
+#
+#                 for key, value in session['cart_item'].items():
+#                     individual_quantity = int(session['cart_item'][key]['quantity'])
+#                     individual_price = float(session['cart_item'][key]['total_price'])
+#                     all_total_quantity = all_total_quantity + individual_quantity
+#                     all_total_price = all_total_price + individual_price
+#             else:
+#                 session['cart_item'] = itemArray
+#                 all_total_quantity = all_total_quantity + _quantity
+#                 all_total_price = all_total_price + _quantity * row['price']
+#
+#             session['all_total_quantity'] = all_total_quantity
+#             session['all_total_price'] = all_total_price
+#
+#             return redirect(url_for('.cart'))
+#         else:
+#             return 'Error while adding item to cart'
+#     except Exception as e:
+#         print(e)
+#     finally:
+#         cursor.close()
+#         conn.close()
+=======
+@app.route('/premium')
+def premium():
+    courses = Premium.query.all()
+    total_courses_in_cart = sum(1 for course in courses if course.cart == CartStatus.yes)
+    return render_template('premium.html', courses=courses, total_courses_in_cart=total_courses_in_cart)
+
+
+@app.route('/add_course', methods=['POST'])
+def add_course():
+    course_name = request.form['course_name']
+    wishlist_status = request.form.get('wishlist', 'no')
+    cart_status = request.form.get('cart', 'no')
+
+    wishlist_status = WishlistStatus.yes if wishlist_status == 'yes' else WishlistStatus.no
+    cart_status = CartStatus.yes if cart_status == 'yes' else CartStatus.no
+
+    course = Premium(c_name=course_name, wishlist=wishlist_status, cart=cart_status)
+    db.session.add(course)
+    db.session.commit()
+
+    return "Juha edited successfully."
+
+'''@app.route('/cart')
+def cart():
+    try:
+        products = Cart.query.all()
+        return render_template('cart.html', products=products)
+    except Exception as e:
+        print(e)'''
+
+
+
+@app.route('/add', methods=['POST'])
+def add_product_to_cart():
+    cursor = None
+    conn = None  # Initialize conn outside the try block
+
+    try:
+        _quantity = int(request.form['quantity'])
+        _code = request.form['code']
+
+        # Validate the received values
+        if _quantity and _code and request.method == 'POST':
+            conn = db.connect()
+            cursor = conn.cursor(pymysql.cursors.DictCursor)
+            cursor.execute("SELECT * FROM cart WHERE code=%s", _code)
+            row = cursor.fetchone()
+
+            itemArray = {
+                row['code']: {
+                    'course_name': row['course_name'],
+                    'course_code': row['coursecode'],
+                    'quantity': _quantity,
+                    'price': row['price'],
+                    'image': row['image'],
+                    'total_price': _quantity * row['price']
+                }
+            }
+
+            all_total_price = 0
+            all_total_quantity = 0
+
+            session.modified = True
+            if 'cart_item' in session:
+                if row['course_code'] in session['cart_item']:
+                    for key, value in session['cart_item'].items():
+                        if row['course_code'] == key:
+                            old_quantity = session['cart_item'][key]['quantity']
+                            total_quantity = old_quantity + _quantity
+                            session['cart_item'][key]['quantity'] = total_quantity
+                            session['cart_item'][key]['total_price'] = total_quantity * row['price']
+                else:
+                    session['cart_item'] = array_merge(session['cart_item'], itemArray)
+
+                for key, value in session['cart_item'].items():
+                    individual_quantity = int(session['cart_item'][key]['quantity'])
+                    individual_price = float(session['cart_item'][key]['total_price'])
+                    all_total_quantity += individual_quantity
+                    all_total_price += individual_price
+            else:
+                session['cart_item'] = itemArray
+                all_total_quantity += _quantity
+                all_total_price += _quantity * row['price']
+
+            session['all_total_quantity'] = all_total_quantity
+            session['all_total_price'] = all_total_price
+
+            return redirect(url_for('.cart'))
+        else:
+            return 'Error while adding item to cart'
+    except Exception as e:
+        print(e)
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+>>>>>>> Stashed changes
+
+
+>>>>>>> 4491c0c1ebcd1f95f0c99d75ff08eb5e39a79302
 @app.route('/cart')
 def cart():
         rows = Cart.query.filter().all()
@@ -577,7 +846,86 @@ def cart():
         return render_template('cart.html', carts=rows)
 
 
+<<<<<<< Updated upstream
 @app.route('/todo', methods= ['GET', 'POST'])
+=======
+@app.route('/empty')
+def empty_cart():
+    try:
+        session.clear()
+        return redirect(url_for('.cart'))
+    except Exception as e:
+        print(e)
+
+
+@app.route('/delete/<string:code>')
+def delete_product(code):
+    try:
+        all_total_price = 0
+        all_total_quantity = 0
+        session.modified = True
+
+        for item in session['cart_item'].items():
+            if item[0] == code:
+                session['cart_item'].pop(item[0], None)
+                if 'cart_item' in session:
+                    for key, value in session['cart_item'].items():
+                        individual_quantity = int(session['cart_item'][key]['quantity'])
+                        individual_price = float(session['cart_item'][key]['total_price'])
+                        all_total_quantity = all_total_quantity + individual_quantity
+                        all_total_price = all_total_price + individual_price
+                break
+
+        if all_total_quantity == 0:
+            session.clear()
+        else:
+            session['all_total_quantity'] = all_total_quantity
+            session['all_total_price'] = all_total_price
+
+        # return redirect('/')
+        return redirect(url_for('.cart'))
+    except Exception as e:
+        print(e)
+
+
+def array_merge(first_array, second_array):
+    if isinstance(first_array, list) and isinstance(second_array, list):
+        return first_array + second_array
+    elif isinstance(first_array, dict) and isinstance(second_array, dict):
+        return dict(list(first_array.items()) + list(second_array.items()))
+    elif isinstance(first_array, set) and isinstance(second_array, set):
+        return first_array.union(second_array)
+    return False
+
+
+
+
+
+#### If this file doesn't exist, create it
+if 'tasks.txt' not in os.listdir('.'):
+    with open('tasks.txt','w') as f:
+        f.write('')
+
+
+def gettasklist():
+    with open('tasks.txt','r') as f:
+        tasklist = f.readlines()
+    return tasklist
+
+def createnewtasklist():
+    os.remove('tasks.txt')
+    with open('tasks.txt','w') as f:
+        f.write('')
+
+def updatetasklist(tasklist):
+    os.remove('tasks.txt')
+    with open('tasks.txt','w') as f:
+        f.writelines(tasklist)
+
+
+
+@app.route('/todo')
+>>>>>>> Stashed changes
 def todo():
     t = Task.query.filter_by(user=current_user.serialno).all()
     if (request.method == 'POST'):
@@ -602,6 +950,119 @@ def todo():
             db.session.commit()
             return redirect('/todo')
     return render_template('todo.html', tasks=t)
+
+@app.route('/update',methods=['POST','GET'])
+def update():
+    if(request.method=='POST'):
+        name = request.form['name']
+        email = request.form['email']
+        password = request.form['password']
+        print(name)
+        if name!='':
+            current_user.name=name
+        if email!='':
+            current_user.email=email
+        if password!='':
+            current_user.password=password
+        db.session.commit()
+
+        flash("updated")
+        return render_template("update.html")
+    return render_template("update.html")
+
+
+@app.route("/new_jobs", methods = ['GET', 'POST'])
+def new_jobs():
+    try:
+        if(request.method=='POST'):
+            '''Add entry to the database'''
+            # Job_Code = request.form.get('Job_Code')
+            Job_Title = request.form.get('Job_Title')
+            Company_Name = request.form.get('Company_Name')
+            Requirement = request.form.get('Requirement')
+            Location = request.form.get('Location')
+            Deadline = request.form.get('Deadline')
+
+            entry = Jobs(Job_Title=Job_Title, Company_Name=Company_Name, Requirement=Requirement, Location=Location, Deadline=Deadline)
+            db.session.add(entry)
+            db.session.commit()
+        return render_template('new_jobs.html')
+    except:
+        return render_template('contact_error.html')
+    return render_template("new_jobs.html")
+
+
+@app.route('/posts',methods=['POST','GET'])
+def posts():
+    if(request.method=='POST'):
+        nm = request.form.get('nm')
+        reason = request.form.get('reason')
+        appointment = request.form.get('appointment')
+
+        entry1 = Post(nm=nm,reason= reason, appointment=appointment )
+        db.session.add(entry1)
+        db.session.commit()
+        flash("Sent appointment to professor")
+        return render_template('posts.html')
+
+    flash("Sorry couldn't Sent appointment to professor")
+    return render_template('posts.html')
+
+@app.route('/Post/delete/<int:id>', methods=('GET', 'POST'))
+def delete(id):
+    post_to_delete= Post.query.get_or_404(id)
+    try:
+        db.session.delete(post_to_delete)
+        db.session.commit()
+        flash("Appointment removed")
+        pendings = Post.query.order_by(Post.nm)
+
+        return render_template('pending.html', pendings=pendings)
+    except:
+        flash("try again")
+        pendings = Post.query.order_by(Post.nm)
+
+        return render_template('pending.html', pendings=pendings)
+
+@app.route('/pending')
+def pending():
+    pendings= Post.query.order_by(Post.nm)
+
+    return render_template('pending.html', pendings=pendings)
+
+@app.route('/approve/<int:id>', methods=['GET', 'POST'])
+def approve(id):
+    appointment = Post.query.get_or_404(id)
+
+
+    approved_meeting = ApprovedMeeting(nm=appointment.nm, reason=appointment.reason, appointment=appointment.appointment)
+
+    try:
+        #approve click er por ja ache ta aproved_meeting database e commit and upcoming_meetings e show korbe as well as pending theke delete hoye jabe.
+        db.session.add(approved_meeting)
+        db.session.commit()
+
+
+        db.session.delete(appointment)
+        db.session.commit()
+
+        flash("Appointment approved and moved to Upcoming Meetings")
+    except:
+        flash("An error occurred while approving the appointment")
+
+    return redirect(url_for('upcoming_meetings'))
+
+@app.route('/upcoming_meetings', methods=['GET'])
+def upcoming_meetings():
+    approved_meetings = ApprovedMeeting.query.all()
+
+    return render_template('upcoming_meetings.html', approved_meetings=approved_meetings)
+
+@app.route('/approved_appointments', methods=['GET'])
+def Approved_appointments():
+    approved_meetings = ApprovedMeeting.query.all()
+
+    return render_template('Approved_appointments.html', approved_meetings=approved_meetings)
 
 
 
@@ -648,6 +1109,22 @@ if __name__ == "__main__":
         # app.add_url_rule('/premium.html', 'premium', premium)
         app.add_url_rule('/cart.html', 'cart', cart)
         app.add_url_rule('/todo.html', 'todo', todo)
+        app.add_url_rule('/update.html', 'update', update)
+        app.add_url_rule('/new_jobs.html', 'new_jobs', new_jobs)
+        app.add_url_rule('/admincontacts.html', 'admincontacts', admincontacts)
+        app.add_url_rule('/admin_dashboard.html', 'admin_dashboard', admin_dashboard)
+
+
+        app.add_url_rule('/pending.html', 'pending', pending)
+        app.add_url_rule('/posts.html', 'posts', posts)
+        app.add_url_rule('/upcoming_meetings.html', 'upcoming_meetings', upcoming_meetings)
+        app.add_url_rule('/Approved_appointments.html', 'Approved_appointments', Approved_appointments)
+
+
+
+
+
+
 
 
     app.run(debug=True)
