@@ -1,0 +1,198 @@
+{% extends "layout_admin.html" %}
+{% block body %}
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Communication Platform</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      margin: 0;
+      padding: 0;
+      background-color: #e0d3ed;
+    }
+
+    .innercard {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .question {
+      border: 1px solid #ddd;
+      background-color: #fff;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .question h2 {
+      font-size: 24px;
+      margin: 0 15 0px;
+      color: #007BFF;
+    }
+
+    .question p {
+      margin: 0;
+      color: #444;
+    }
+
+    .replies {
+      margin-top: 5px;
+    }
+
+    .reply {
+      border: 1px solid #ddd;
+      background-color: #f9f9f9;
+      padding: 15px;
+      margin-bottom: 2px;
+      border-radius: 5px;
+    }
+
+    .q {
+      border: 1px solid #ddd;
+      background-color: #aef5ca;
+      padding: 15px;
+      margin-top: 20px;
+      margin-bottom: 20px;
+      border-radius: 5px;
+    }
+
+    .reply p {
+      margin: 0;
+      color: #666;
+    }
+
+    .add-reply-button {
+      display: block;
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #007BFF;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .add-reply-button:hover {
+      background-color: #0056b3;
+    }
+
+    /* Styling for the comment box */
+    .comment-box {
+      margin-top: 20px;
+      border: 1px solid #ddd;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .comment-box input {
+      width: 100%;
+      padding: 10px;
+      resize: vertical;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background-color: #f9f9f9;
+      color: #333;
+      font-size: 16px;
+    }
+
+    .comment-box button {
+      display: block;
+      margin-top: 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #28a745;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .comment-box button:hover {
+      background-color: #218838;
+    }
+    .date{
+      font-size: 10px;
+    }
+    .who{
+      font-size: 16px;
+      color: #69d184;
+    }
+    .whopost{
+      font-size: 18px;
+      color: #1b291f;
+    }
+
+        /* Add custom CSS to adjust button size */
+    .q button {
+      font-size: 17px; /* Decrease font size */
+      padding: 9px 10px; /* Adjust padding for height and width */
+    }
+
+            /* Add custom CSS to adjust button size */
+    .reply button {
+      font-size: 17px; /* Decrease font size */
+      padding: 9px 10px; /* Adjust padding for height and width */
+    }
+
+
+  </style>
+</head>
+<body>
+  <div class="innercard">
+    <div class="question">
+
+
+      {% for i in ques[::-1] %}
+                <h2>Question Title</h2>
+              <div class="q">
+                <div class="whopost"><b>{{ i.poster }}:</b></div>
+              <p>{{ i['question'] }}</p>
+                <div class="date">{{ i.date }}</div>
+
+                <button class="btn btn-secondary">Delete Question</button>
+              </div>
+
+        <strong>Replies:</strong>
+        {% for rep in reply %}
+            {% if rep.r_id == i.q_id %}
+
+
+      <div class="replies">
+
+        <div class="reply">
+           <div class="who"><b>{{ rep.person }}:</b></div>
+          <p>{{ rep.answer }}</p>
+          <div class="date">{{ rep.time }}</div>
+          <button class="btn btn-secondary">Delete Reply</button>
+
+        </div>
+          {% endif %}
+        {% endfor %}
+      <div class="comment-box">
+          <form action="/discussion" method="post">
+            <input type="hidden" name="r_id" value="{{ i.q_id }}">
+        <input type="text" name="r" placeholder="Reply here...">
+        <button type="submit">Reply</button>
+        </form>
+          </div>
+
+        {% endfor %}
+
+    <div class="comment-box">
+      <h2>Post Your Question</h2>
+      <form action="/discussion" method="post">
+        <input type="text" name="q" placeholder="Write your question here...">
+        <button type="submit" style="background-color:#010101">Post Question</button>
+      </form>
+  </div>
+</body>
+	{% endblock %}

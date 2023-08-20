@@ -1,0 +1,29 @@
+{% extends "layout_admin.html" %}
+{% block body %}
+<!-- Page Header -->
+      <!--header class="masthead" style="background-image: url('{{ url_for('static', filename='img/contact-bg.jpg') }}')"-->
+    <div class="services_section">
+        <div class="container">
+            <h1 class="services_text">USER LIST:</h1>
+        </div>
+    </div>
+
+{% for i in user_list %}
+<div class="shadow p-3 mb-5 bg-body rounded appointment-card">
+    <h2><strong>PROFESSORS LIST </strong></h2>
+    <div class="user-details">
+        <p><strong>NAME:</strong> {{ i.FullName }}</p>
+        <p><strong>EMAIL:</strong> {{ i.mail}}</p>
+        <p><strong>UNIVERSITY NAME:</strong> {{ i.uniName }}</p>
+    </div>
+    <div class="delete-button">
+        <a href="{{ url_for('deleteP',serial=i.serial) }}" class="btn btn-danger btn-sm">REMOVE PROFESSOR</a>
+    </div>
+
+
+</div>
+
+
+
+{% endfor %}
+{% endblock %}

@@ -7,7 +7,11 @@ from flask_login import UserMixin, login_user, LoginManager, login_required, log
 from flask import flash, session, render_template, request, redirect, url_for
 import os
 from datetime import date
+
 course_taken = None
+
+#import mysql.connector
+
 
 datetoday = date.today().strftime("%m_%d_%y")
 datetoday2 = date.today().strftime("%d-%B-%Y")
@@ -33,6 +37,8 @@ class Contacts(db.Model, UserMixin):
     password = db.Column(db.String(12), nullable=False)
     basic_mode = db.Column(db.Boolean, nullable=False, default=True)
     image = db.Column(db.String(80), nullable=False)
+
+
     def get_id(self):
         return str(self.serialno)
 
@@ -44,14 +50,6 @@ class Profcontacts(db.Model, UserMixin):
     mail = db.Column(db.String(120), unique=True, nullable=False)
     passw = db.Column(db.String(100), nullable=False)
 
-    def get_id(self):
-        return str(self.serial)
-
-class Admin_login(db.Model, UserMixin):
-    aserial = db.Column(db.Integer, primary_key=True)
-    aname = db.Column(db.String(100), nullable=False)
-    aemail = db.Column(db.String(120), unique=True, nullable=False)
-    apassword = db.Column(db.String(100), nullable=False)
     def get_id(self):
         return str(self.serial)
 
@@ -102,6 +100,7 @@ class Prof_post(db.Model):
 
 
 class Cart(db.Model):
+
     id= db.Column(db.Integer, primary_key=True)
     course_name= db.Column(db.String(250),nullable=False)
     course_code = db.Column(db.String(250), nullable=False)
@@ -135,11 +134,14 @@ class ApprovedMeeting(db.Model):
     nm = db.Column(db.String(255), nullable=False)
     reason = db.Column(db.Text, nullable=False)
     appointment = db.Column(db.String(255), nullable=False)
-    id = db.Column(db.Integer, primary_key=True)
-    course_name = db.Column(db.String(255), nullable=False)
-    course_code = db.Column(db.String(255), nullable=False)
-    image = db.Column(db.Text, nullable=False)
-    price = db.Column(db.Float, nullable=False)
+
+
+
+
+
+
+
+
 
 
 
@@ -174,12 +176,6 @@ def load_user(id):
 @app.route("/index")
 def home():
     return render_template('index.html')
-
-
-@app.route("/courses_show", methods=['GET', 'POST'])
-def Courses_show():
-    r = Cart.query.filter().all()
-    return render_template('courses_show.html', items=r)
 
 
 @app.route("/courses", methods=['GET', 'POST'])
@@ -575,30 +571,6 @@ def loginP():
     return render_template('loginP.html')
 
 
-@app.route("/admin_login", methods= ['GET', 'POST'])
-def admin_login():
-    if(request.method== 'POST'):
-        mail_in= request.form.get('mail')
-        passw_in= request.form.get('password')
-        res = Admin_login.query.filter(Admin_login.amail==mail_in).all()
-        print(mail_in,passw_in,res[0].mail)
-        if len(res) == 0:
-            return 'error'  #need to add flash on top
-        elif res[0].mail==aemail_in and res[0].apassword==passw_in:
-            login_user(res[0])
-            return redirect(url_for('userP'))
-        elif res[0].aemail==mail_in and res[0].apassword!=passw_in:
-            return 'password error' #need to add flash on top
-
-    return render_template('admin_home.html')
-
-
-
-@app.route('/admin_login', methods=['GET', 'POST'])
-@login_required
-def dashboard3():
-    return render_template('admin_home.html')
-
 @app.route('/userP', methods=['GET', 'POST'])
 @login_required
 def dashboard2():
@@ -635,14 +607,10 @@ def logout():
     logout_user()
     return redirect(url_for('home'))
 
-
-
-@app.route('/premium')
-def premium():
-    courses = Premium.query.all()
-    total_courses_in_cart = sum(1 for course in courses if course.cart == CartStatus.yes)
-    return render_template('premium.html', courses=courses, total_courses_in_cart=total_courses_in_cart)
-
+@app.route("/courses_show", methods=['GET', 'POST'])
+def Courses_show():
+    r = Cart.query.filter().all()
+    return render_template('courses_show.html', items=r)
 
 
 
@@ -654,7 +622,85 @@ def cart():
         return render_template('cart.html', carts=rows)
 
 
-@app.route('/todo')
+
+
+
+@app.route('/empty')
+def empty_cart():
+    try:
+        session.clear()
+        return redirect(url_for('.cart'))
+    except Exception as e:
+        print(e)
+
+
+@app.route('/delete/<string:code>')
+def delete_product(code):
+    try:
+        all_total_price = 0
+        all_total_quantity = 0
+        session.modified = True
+
+        for item in session['cart_item'].items():
+            if item[0] == code:
+                session['cart_item'].pop(item[0], None)
+                if 'cart_item' in session:
+                    for key, value in session['cart_item'].items():
+                        individual_quantity = int(session['cart_item'][key]['quantity'])
+                        individual_price = float(session['cart_item'][key]['total_price'])
+                        all_total_quantity = all_total_quantity + individual_quantity
+                        all_total_price = all_total_price + individual_price
+                break
+
+        if all_total_quantity == 0:
+            session.clear()
+        else:
+            session['all_total_quantity'] = all_total_quantity
+            session['all_total_price'] = all_total_price
+
+        # return redirect('/')
+        return redirect(url_for('.cart'))
+    except Exception as e:
+        print(e)
+
+
+def array_merge(first_array, second_array):
+    if isinstance(first_array, list) and isinstance(second_array, list):
+        return first_array + second_array
+    elif isinstance(first_array, dict) and isinstance(second_array, dict):
+        return dict(list(first_array.items()) + list(second_array.items()))
+    elif isinstance(first_array, set) and isinstance(second_array, set):
+        return first_array.union(second_array)
+    return False
+
+
+
+
+
+#### If this file doesn't exist, create it
+if 'tasks.txt' not in os.listdir('.'):
+    with open('tasks.txt','w') as f:
+        f.write('')
+
+
+def gettasklist():
+    with open('tasks.txt','r') as f:
+        tasklist = f.readlines()
+    return tasklist
+
+def createnewtasklist():
+    os.remove('tasks.txt')
+    with open('tasks.txt','w') as f:
+        f.write('')
+
+def updatetasklist(tasklist):
+    os.remove('tasks.txt')
+    with open('tasks.txt','w') as f:
+        f.writelines(tasklist)
+
+
+
+@app.route('/todo',methods=['POST','GET'])
 def todo():
     t = Task.query.filter_by(user=current_user.serialno).all()
     if (request.method == 'POST'):
@@ -700,6 +746,25 @@ def update():
     return render_template("update.html")
 
 
+@app.route("/new_jobs", methods = ['GET', 'POST'])
+def new_jobs():
+    try:
+        if(request.method=='POST'):
+            '''Add entry to the database'''
+            # Job_Code = request.form.get('Job_Code')
+            Job_Title = request.form.get('Job_Title')
+            Company_Name = request.form.get('Company_Name')
+            Requirement = request.form.get('Requirement')
+            Location = request.form.get('Location')
+            Deadline = request.form.get('Deadline')
+
+            entry = Jobs(Job_Title=Job_Title, Company_Name=Company_Name, Requirement=Requirement, Location=Location, Deadline=Deadline)
+            db.session.add(entry)
+            db.session.commit()
+        return render_template('new_jobs.html')
+    except:
+        return render_template('contact_error.html')
+    return render_template("new_jobs.html")
 
 
 @app.route('/posts',methods=['POST','GET'])
@@ -776,27 +841,54 @@ def Approved_appointments():
 
 
 
-@app.route('/jobs_admin')
-def jobs_admin():
-    res = Jobs.query.filter().all()
-    return render_template('jobs_admin.html', result=res)
 
 
-@app.route('/new_jobs', methods= ['GET', 'POST'])
-def new_jobs():
-        res = Jobs.query.filter().all()
-        if(request.method=='POST'):
-            name = request.form.get('Job_Title')
-            c = request.form.get('Company_Name')
-            r = request.form.get('Requirement')
-            l = request.form.get('Location')
-            print(name,c,r,l)
 
-            entry = Jobs(Job_Title=name,Company_Name =c , Requirement=r, Location=l )
-            db.session.add(entry)
-            db.session.commit()
-            return render_template('jobs_admin.html', result=res)
-        return render_template('new_jobs.html')
+#admin
+@app.route('/Contacts/delete/<int:serialno>', methods=('GET', 'POST'))
+def deleteu(serialno):
+    post_to_delete= Contacts.query.get_or_404(serialno)
+    try:
+        db.session.delete(post_to_delete)
+        db.session.commit()
+        pendings1 = Contacts.query.order_by(Contacts.name)
+        flash("USER HAS BEEN REMOVED")
+        return render_template('userl.html', pendings1=pendings1)
+    except:
+        flash("try again")
+        pendings1 = Contacts.query.order_by(Contacts.name)
+        return render_template('userl.html', pendings1=pendings1)
+
+@app.route('/Profcontacts/deleteP/<int:serial>', methods=('GET', 'POST'))
+def deleteP(serial): #delete prof for admin
+    post_to_delete= Profcontacts.query.get_or_404(serial)
+    try:
+        db.session.delete(post_to_delete)
+        db.session.commit()
+        pendings2 = Profcontacts.query.order_by(Profcontacts.name)
+        flash("USER HAS BEEN REMOVED")
+        return render_template('userpl.html', pendings2=pendings2)
+    except:
+        pendings2 = Profcontacts.query.order_by(Contacts.name)
+        flash("USER HAS BEEN REMOVED")
+        return render_template('userpl.html', pendings2=pendings2)
+@app.route('/userl', methods=['GET'])
+def userl():
+    user_list = Contacts.query.all()
+
+    return render_template('userl.html', user_list=user_list)
+@app.route('/userpl', methods=['GET'])
+def userpl():
+    user_list = Profcontacts.query.all()
+
+    return render_template('userpl.html', user_list=user_list)
+
+
+
+
+
+
+
 
 
 
@@ -829,6 +921,8 @@ if __name__ == "__main__":
         app.add_url_rule('/posts.html', 'posts', posts)
         app.add_url_rule('/upcoming_meetings.html', 'upcoming_meetings', upcoming_meetings)
         app.add_url_rule('/Approved_appointments.html', 'Approved_appointments', Approved_appointments)
+        app.add_url_rule('/userl.html', 'userl', userl)
+        app.add_url_rule('/userpl.html', 'userpl', userpl)
 
 
 

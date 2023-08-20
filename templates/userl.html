@@ -1,0 +1,29 @@
+{% extends "layout_admin.html" %}
+{% block body %}
+<!-- Page Header -->
+      <!--header class="masthead" style="background-image: url('{{ url_for('static', filename='img/contact-bg.jpg') }}')"-->
+    <div class="services_section">
+        <div class="container">
+            <h1 class="services_text">USER LIST:</h1>
+        </div>
+    </div>
+
+{% for i in user_list %}
+<div class="shadow p-3 mb-5 bg-body rounded appointment-card">
+    <h2><strong>USER LIST </strong></h2>
+    <div class="user-details">
+        <p><strong>NAME:</strong> {{ i.name }}</p>
+        <p><strong>EMAIL:</strong> {{ i.email }}</p>
+        <p><strong>PREMIUM MODE:</strong> {{ i.basic_mode }}</p>
+    </div>
+    <div class="delete-button">
+        <a href="{{ url_for('deleteu',serialno=i.serialno) }}" class="btn btn-danger btn-sm">DELETE USER</a>
+    </div>
+
+
+</div>
+
+
+
+{% endfor %}
+{% endblock %}

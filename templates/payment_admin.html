@@ -1,4 +1,3 @@
-
 {% extends "layout_admin.html" %}
 {% block body %}
 <head>
@@ -128,19 +127,13 @@
 </head>
 <body>
 
-    <!-- Container for the buttons -->
+            <!-- Add a button that redirects to new_jobs.html -->
     <div style="text-align: center; margin-top: 20px;">
-        <!-- First button -->
-        <a href="new_jobs.html" class="btn btn-primary">ADD JOBS</a>
-
-        <!-- Add some spacing between buttons -->
-        <span style="margin: 0 10px;"></span>
-
-        <!-- Second button -->
-        <a href="other_page.html" class="btn btn-secondary">REMOVE JOBS</a>
+        <a href="new_jobs.html" class="btn btn-primary">APPROVE PAYMENT</a>
     </div>
         <!-- Add some spacing -->
     <div style="margin-top: 20px;"></div>
+
 
    <div class="search-container">
       <input
@@ -154,10 +147,12 @@
    <table id="myTable">
       <thead>
          <tr>
-            <th onclick="sortTable(0)">Job Title</th>
-            <th onclick="sortTable(1)">Company Name</th>
-            <th onclick="sortTable(2)">Requirement</th>
+          <!-- change the table heading names based on the database below: -->
+            <th onclick="sortTable(0)">Payment method</th>
+            <th onclick="sortTable(1)">Date Paid</th>
+            <th onclick="sortTable(2)">Payment Status</th>
             {% if not current_user.basic_mode %}
+            <!-- edit the sorting variable named=s below: -->
             <th onclick="sortTable(3)">Location</th>
             <th onclick="sortTable(4)">Deadline</th>
             {% endif %}
